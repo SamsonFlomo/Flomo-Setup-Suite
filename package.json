@@ -1,0 +1,32 @@
+{
+  "name": "flomo-setup-suite",
+  "version": "1.0.0",
+  "description": "windows computer setup and automation platform ",
+  "keywords": [
+    "windows",
+    "automation",
+    "powershell",
+    "electron",
+    "setup",
+    "deployment"
+  ],
+  "homepage": "https://github.com/SamsonFlomo/Flomo-Setup-Suite#readme",
+  "bugs": {
+    "url": "https://github.com/SamsonFlomo/Flomo-Setup-Suite/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SamsonFlomo/Flomo-Setup-Suite.git"
+  },
+  "license": "MIT",
+  "author": "Samson Flomo",
+  "type": "commonjs",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
