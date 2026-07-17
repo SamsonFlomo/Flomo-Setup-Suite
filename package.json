@@ -27,9 +27,15 @@
     "test": "tests"
   },
   "scripts": {
-    "start": "electron ."
+    "dev": "vite",
+    "electron": "electron ."
   },
   "devDependencies": {
-    "electron": "^43.1.0"
+    "electron": "^43.1.0",
+    "vite": "^8.1.5"
+  },
+  "dependencies": {
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
   }
 }

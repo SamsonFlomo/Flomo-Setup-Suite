@@ -8,8 +8,7 @@ function createWindow() {
         title: "Flomo Setup Suite"
     });
 
-    window.loadFile("index.html");
-
+    window.loadURL("http://localhost:5173");
 }
 
 app.whenReady().then(() => {
