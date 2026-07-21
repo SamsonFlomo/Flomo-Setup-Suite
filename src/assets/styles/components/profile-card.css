@@ -1,0 +1,27 @@
+.profile-card {
+
+    border: 1px solid #ccc;
+
+    padding: 20px;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    width: 300px;
+
+}
+
+
+.profile-card:hover {
+
+    transform: translateY(-3px);
+
+}
+
+
+.profile-card.selected {
+
+    border: 3px solid blue;
+
+}

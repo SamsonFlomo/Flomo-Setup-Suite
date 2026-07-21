@@ -1,10 +1,26 @@
-function ProfileCard({ title, description }) {
+import "../../assets/styles/components/profile-card.css";
+
+
+function ProfileCard({
+    id,
+    title,
+    description,
+    selected,
+    onSelect
+}) {
+
     return (
-        <div>
+
+        <button
+            onClick={() => onSelect(id)}
+        >
+
             <h2>{title}</h2>
 
             <p>{description}</p>
-        </div>
+
+        </button>
+
     );
 }
 
