@@ -1,10 +1,24 @@
-function Completion() {
+import OrganizationManager from "../../components/organization/OrganizationManager";
+
+
+function Organizations(){
+
     return (
+
         <div>
-            <h1>Completion</h1>
-            <p>Setup completed successfully.</p>
+
+            <h1>
+                Organization Management
+            </h1>
+
+
+            <OrganizationManager />
+
         </div>
+
     );
+
 }
 
-export default Completion;
+
+export default Organizations;

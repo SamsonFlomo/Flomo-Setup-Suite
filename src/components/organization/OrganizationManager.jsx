@@ -3,90 +3,85 @@ import { useContext } from "react";
 import { OrganizationContext } from "../../context/OrganizationContext";
 
 import OrganizationForm from "./OrganizationForm";
+import DepartmentManager from "./DepartmentManager";
 
 
-function OrganizationManager(){
+function OrganizationManager() {
 
-    const { organizations } =
-        useContext(OrganizationContext);
-
-
-
-    return (
-
-        <section>
+  const { 
+    organizations, 
+    deleteOrganization 
+  } = useContext(OrganizationContext);
 
 
-            <h2>
-                Organizations
-            </h2>
+  return (
+    <section>
+
+      <h2>
+        Organizations
+      </h2>
 
 
-            <OrganizationForm />
+      <OrganizationForm />
 
 
-            <hr />
+      <hr />
 
 
-            <h3>
-                Existing Organizations
-            </h3>
+      <DepartmentManager />
 
 
-
-            {
-
-                organizations.length === 0 ?
-
-                (
-
-                    <p>
-                        No organizations added yet.
-                    </p>
-
-                )
-
-                :
-
-                (
-
-                    organizations.map((organization)=>(
+      <hr />
 
 
-                        <div key={organization.id}>
+      <h3>
+        Existing Organizations
+      </h3>
 
 
-                            <h4>
-                                {organization.name}
-                            </h4>
+      {organizations.length === 0 ? (
+
+        <p>
+          No organizations added yet.
+        </p>
+
+      ) : (
+
+        organizations.map((organization) => (
+
+          <div key={organization.id}>
 
 
-                            <p>
-                                Code:
-                                {organization.code}
-                            </p>
+            <h4>
+              {organization.name}
+            </h4>
 
 
-                            <p>
-                                Domain:
-                                {organization.domain}
-                            </p>
+            <p>
+              Code: {organization.code}
+            </p>
 
 
-                        </div>
+            <p>
+              Domain: {organization.domain}
+            </p>
 
 
-                    ))
+            <button 
+              onClick={() => deleteOrganization(organization.id)}
+            >
+              Delete
+            </button>
 
-                )
 
-            }
+          </div>
 
+        ))
 
-        </section>
+      )}
 
-    );
-
+    </section>
+  );
 }
 
 
