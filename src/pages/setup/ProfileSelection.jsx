@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 
-import { SetupContext } from "../context/SetupContext";
-import profiles from "../data/profiles";
-import ProfileCard from "../components/setup/ProfileCard";
+import { SetupContext } from "../../context/SetupContext";
+import profiles from "../../data/profiles";
+import ProfileCard from "../../components/setup/ProfileCard";
 
 
 function ProfileSelection() {

@@ -4,24 +4,16 @@ import { BrowserRouter } from "react-router-dom";
 
 import App from "./App";
 import { SetupProvider } from "./context/SetupContext";
+import { OrganizationProvider } from "./context/OrganizationContext.jsx";
 
-
-ReactDOM.createRoot(
-    document.getElementById("root")
-).render(
-
-    <React.StrictMode>
-
-        <BrowserRouter>
-
-            <SetupProvider>
-
-                <App />
-
-            </SetupProvider>
-
-        </BrowserRouter>
-
-    </React.StrictMode>
-
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <OrganizationProvider>
+        <SetupProvider>
+          <App />
+        </SetupProvider>
+      </OrganizationProvider>
+    </BrowserRouter>
+  </React.StrictMode>,
 );

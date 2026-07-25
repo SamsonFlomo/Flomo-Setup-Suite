@@ -21,7 +21,7 @@
   "license": "MIT",
   "author": "Samson Flomo",
   "type": "commonjs",
-  "main": "main.js",
+  "main": "electron/main.js",
   "directories": {
     "doc": "docs",
     "test": "tests"
