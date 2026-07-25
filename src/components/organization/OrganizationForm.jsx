@@ -1,89 +1,237 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 
 import { OrganizationContext } from "../../context/OrganizationContext";
 
-function OrganizationForm() {
-  const { addOrganization } = useContext(OrganizationContext);
 
-  const [formData, setFormData] = useState({
-    name: "",
+function OrganizationForm({ editingOrganization, clearEdit }) {
 
-    code: "",
 
-    domain: "",
+    const {
 
-    description: "",
-  });
+        addOrganization,
 
-  function handleChange(event) {
-    const { name, value } = event.target;
+        updateOrganization
 
-    setFormData((previousData) => ({
-      ...previousData,
+    } = useContext(OrganizationContext);
 
-      [name]: value,
-    }));
-  }
 
-  function handleSubmit(event) {
-    event.preventDefault();
 
-    const newOrganization = {
-      id: Date.now(),
+    const initialState = {
 
-      ...formData,
+        name: "",
 
-      departments: [],
+        code: "",
+
+        domain: "",
+
+        description: ""
+
     };
 
-    addOrganization(newOrganization);
 
-    setFormData({
-      name: "",
 
-      code: "",
+    const [formData, setFormData] = useState(initialState);
 
-      domain: "",
 
-      description: "",
-    });
-  }
 
-  return (
-    <form onSubmit={handleSubmit}>
-      <h3>Add Organization</h3>
+    useEffect(()=>{
 
-      <input
-        name="name"
-        placeholder="Organization Name"
-        value={formData.name}
-        onChange={handleChange}
-      />
 
-      <input
-        name="code"
-        placeholder="Company Code"
-        value={formData.code}
-        onChange={handleChange}
-      />
+        if(editingOrganization){
 
-      <input
-        name="domain"
-        placeholder="Domain (optional)"
-        value={formData.domain}
-        onChange={handleChange}
-      />
+            setFormData({
 
-      <textarea
-        name="description"
-        placeholder="Description"
-        value={formData.description}
-        onChange={handleChange}
-      />
+                name: editingOrganization.name,
 
-      <button type="submit">Save Organization</button>
-    </form>
-  );
+                code: editingOrganization.code,
+
+                domain: editingOrganization.domain,
+
+                description: editingOrganization.description
+
+            });
+
+        }
+
+
+    },[editingOrganization]);
+
+
+
+
+    function handleChange(event){
+
+
+        const {name,value}=event.target;
+
+
+        setFormData((previousData)=>({
+
+            ...previousData,
+
+            [name]:value
+
+        }));
+
+    }
+
+
+
+
+    function handleSubmit(event){
+
+
+        event.preventDefault();
+
+
+
+        if(editingOrganization){
+
+
+            updateOrganization(
+
+                editingOrganization.id,
+
+                formData
+
+            );
+
+
+            clearEdit();
+
+
+        }
+
+        else{
+
+
+            addOrganization({
+
+                id:Date.now(),
+
+                ...formData,
+
+                departments:[]
+
+            });
+
+
+        }
+
+
+
+        setFormData(initialState);
+
+
+    }
+
+
+
+
+    return (
+
+        <form onSubmit={handleSubmit}>
+
+
+            <h3>
+
+                {
+                    editingOrganization
+
+                    ?
+
+                    "Edit Organization"
+
+                    :
+
+                    "Add Organization"
+
+                }
+
+            </h3>
+
+
+
+            <input
+
+                name="name"
+
+                placeholder="Organization Name"
+
+                value={formData.name}
+
+                onChange={handleChange}
+
+            />
+
+
+
+            <input
+
+                name="code"
+
+                placeholder="Organization Code"
+
+                value={formData.code}
+
+                onChange={handleChange}
+
+            />
+
+
+
+            <input
+
+                name="domain"
+
+                placeholder="Domain"
+
+                value={formData.domain}
+
+                onChange={handleChange}
+
+            />
+
+
+
+            <textarea
+
+                name="description"
+
+                placeholder="Description"
+
+                value={formData.description}
+
+                onChange={handleChange}
+
+            />
+
+
+
+            <button type="submit">
+
+                {
+                    editingOrganization
+
+                    ?
+
+                    "Save Changes"
+
+                    :
+
+                    "Add Organization"
+
+                }
+
+            </button>
+
+
+
+        </form>
+
+    );
+
 }
+
 
 export default OrganizationForm;

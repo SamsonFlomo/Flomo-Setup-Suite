@@ -2,281 +2,132 @@ import { useContext, useState } from "react";
 
 import { OrganizationContext } from "../../context/OrganizationContext";
 
+function DepartmentManager() {
+  const {
+    organizations,
 
-function DepartmentManager(){
+    addDepartment,
 
-    const {
+    updateDepartment,
 
-        organizations,
+    deleteDepartment,
+  } = useContext(OrganizationContext);
 
-        addDepartment,
+  const [selectedOrganization, setSelectedOrganization] = useState("");
 
-        deleteDepartment
+  const [departmentName, setDepartmentName] = useState("");
+  const [editingDepartment, setEditingDepartment] = useState(null);
 
-    } = useContext(OrganizationContext);
+  const organization = organizations.find(
+    (organization) => organization.id === Number(selectedOrganization),
+  );
 
-
-
-    const [selectedOrganization, setSelectedOrganization] = useState("");
-
-    const [departmentName, setDepartmentName] = useState("");
-
-
-
-    const organization = organizations.find(
-
-        (organization) =>
-
-        organization.id === Number(selectedOrganization)
-
-    );
-
-
-
-    function handleAddDepartment(){
-
-
-        if(!organization || !departmentName){
-
-            return;
-
-        }
-
-
-        const newDepartment = {
-
-            id: Date.now(),
-
-            name: departmentName
-
-        };
-
-
-        addDepartment(
-
-            organization.id,
-
-            newDepartment
-
-        );
-
-
-        setDepartmentName("");
-
+  function handleSaveDepartment() {
+    if (!organization || !departmentName) {
+      return;
     }
 
+    if (editingDepartment) {
+      updateDepartment(
+        organization.id,
 
+        editingDepartment.id,
 
+        {
+          name: departmentName,
+        },
+      );
+    } else {
+      const newDepartment = {
+        id: Date.now(),
 
-    return (
+        name: departmentName,
+      };
 
-        <section>
+      addDepartment(
+        organization.id,
 
+        newDepartment,
+      );
+    }
 
-            <h2>
-                Department Management
-            </h2>
+    setDepartmentName("");
 
+    setEditingDepartment(null);
+  }
 
+  function handleEditDepartment(department) {
+    setEditingDepartment(department);
 
-            <label>
-                Select Organization
-            </label>
+    setDepartmentName(department.name);
+  }
 
+  return (
+    <section>
+      <h2>Department Management</h2>
 
-            <select
+      <label>Select Organization</label>
 
-                value={selectedOrganization}
+      <select
+        value={selectedOrganization}
+        onChange={(event) => setSelectedOrganization(event.target.value)}
+      >
+        <option value="">Select Organization</option>
 
-                onChange={(event)=>
+        {organizations.map((organization) => (
+          <option key={organization.id} value={organization.id}>
+            {organization.name}
+          </option>
+        ))}
+      </select>
 
-                    setSelectedOrganization(
+      {organization && (
+        <>
+          <h3>Departments</h3>
 
-                        event.target.value
+          {organization.departments.length === 0 ? (
+            <p>No departments added.</p>
+          ) : (
+            organization.departments.map((department) => (
+              <div key={department.id}>
+                <span>{department.name}</span>
 
+                <button onClick={() => handleEditDepartment(department)}>
+                  Edit
+                </button>
+
+                <button
+                  onClick={() =>
+                    deleteDepartment(
+                      organization.id,
+
+                      department.id,
                     )
-
-                }
-
-            >
-
-
-                <option value="">
-
-                    Select Organization
-
-                </option>
-
-
-
-                {
-
-                    organizations.map((organization)=>(
-
-                        <option
-
-                            key={organization.id}
-
-                            value={organization.id}
-
-                        >
-
-                            {organization.name}
-
-                        </option>
-
-                    ))
-
-                }
-
-
-            </select>
-
-
-
-
-            {
-
-                organization && (
-
-                    <>
-
-
-                        <h3>
-
-                            Departments
-
-                        </h3>
-
-
-
-                        {
-
-                            organization.departments.length === 0
-
-                            ?
-
-                            (
-
-                                <p>
-
-                                    No departments added.
-
-                                </p>
-
-                            )
-
-                            :
-
-                            (
-
-                                organization.departments.map((department)=>(
-
-
-                                    <div
-
-                                        key={department.id}
-
-                                    >
-
-                                        <span>
-
-                                            {department.name}
-
-                                        </span>
-
-
-
-                                        <button
-
-                                            onClick={()=>
-
-
-                                                deleteDepartment(
-
-                                                    organization.id,
-
-                                                    department.id
-
-                                                )
-
-
-                                            }
-
-                                        >
-
-                                            Delete
-
-                                        </button>
-
-
-                                    </div>
-
-
-                                ))
-
-                            )
-
-                        }
-
-
-
-                        <hr />
-
-
-
-                        <h3>
-
-                            Add Department
-
-                        </h3>
-
-
-
-                        <input
-
-                            value={departmentName}
-
-                            placeholder="Department name"
-
-                            onChange={(event)=>
-
-                                setDepartmentName(
-
-                                    event.target.value
-
-                                )
-
-                            }
-
-                        />
-
-
-
-                        <button
-
-                            onClick={handleAddDepartment}
-
-                        >
-
-                            Add Department
-
-                        </button>
-
-
-
-                    </>
-
-                )
-
-            }
-
-
-        </section>
-
-    );
-
+                  }
+                >
+                  Delete
+                </button>
+              </div>
+            ))
+          )}
+
+          <hr />
+
+          <h3>Add Department</h3>
+
+          <input
+            value={departmentName}
+            placeholder="Department name"
+            onChange={(event) => setDepartmentName(event.target.value)}
+          />
+
+          <button onClick={handleSaveDepartment}>
+            {editingDepartment ? "Save Changes" : "Add Department"}
+          </button>
+        </>
+      )}
+    </section>
+  );
 }
-
 
 export default DepartmentManager;

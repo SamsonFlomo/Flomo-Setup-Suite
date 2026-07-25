@@ -13,18 +13,35 @@ export function OrganizationProvider({ children }) {
     ]);
   }
 
-  function updateOrganization(id, updatedData) {
-    setOrganizations((previousOrganizations) =>
-      previousOrganizations.map((organization) =>
-        organization.id === id
-          ? {
-              ...organization,
-              ...updatedData,
+  function updateOrganization(
+    organizationId,
+    updatedOrganization
+){
+
+
+    setOrganizations((previousOrganizations)=>
+
+        previousOrganizations.map((organization)=>
+
+            organization.id === organizationId
+
+            ?
+
+            {
+                ...organization,
+                ...updatedOrganization
             }
-          : organization,
-      ),
+
+            :
+
+            organization
+
+        )
+
     );
-  }
+
+
+}
 
   function deleteOrganization(id) {
     setOrganizations((previousOrganizations) =>
@@ -90,20 +107,22 @@ export function OrganizationProvider({ children }) {
   return (
     <OrganizationContext.Provider
       value={{
-        organizations,
 
-        addOrganization,
+    organizations,
 
-        updateOrganization,
+    addOrganization,
 
-        deleteOrganization,
+    updateOrganization,
 
-        addDepartment,
+    deleteOrganization,
 
-        updateDepartment,
+    addDepartment,
 
-        deleteDepartment,
-      }}
+    updateDepartment,
+
+    deleteDepartment
+
+}}
     >
       {children}
     </OrganizationContext.Provider>
