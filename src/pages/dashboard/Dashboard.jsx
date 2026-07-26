@@ -1,10 +1,34 @@
-function Completion() {
+import DashboardHeader from "../../components/dashboard/DashboardHeader";
+
+import QuickActions from "../../components/dashboard/QuickActions";
+import StatisticsCards from "../../components/dashboard/StatisticsCards";
+import RecentActivity from "../../components/dashboard/RecentActivity";
+
+
+function Dashboard(){
+
     return (
-        <div>
-            <h1>Completion</h1>
-            <p>Setup completed successfully.</p>
-        </div>
+
+        <section className="dashboard">
+
+
+            <DashboardHeader />
+
+
+            <QuickActions />
+
+
+            <StatisticsCards />
+
+
+            <RecentActivity />
+
+
+        </section>
+
     );
+
 }
 
-export default Completion;
+
+export default Dashboard;

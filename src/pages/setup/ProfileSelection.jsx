@@ -4,6 +4,7 @@ import { useContext } from "react";
 import { SetupContext } from "../../context/SetupContext";
 import profiles from "../../data/profiles";
 import ProfileCard from "../../components/setup/ProfileCard";
+import ROUTES from "../../constants/routes";
 
 
 function ProfileSelection() {
@@ -19,7 +20,7 @@ function ProfileSelection() {
             return;
         }
 
-        navigate("/setup");
+        navigate(ROUTES.SETUP);
     }
 
 

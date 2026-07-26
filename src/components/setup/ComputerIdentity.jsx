@@ -67,17 +67,9 @@ function ComputerIdentity() {
       <section>
         <h2>Computer Identity</h2>
 
-<p>
+        <p>No organizations have been created yet.</p>
 
-    No organizations have been created yet.
-
-</p>
-
-<Link to="/organizations">
-
-    Create Organization
-
-</Link>
+        <Link to="/organizations">Create Organization</Link>
       </section>
     );
   }

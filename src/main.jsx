@@ -5,6 +5,11 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { SetupProvider } from "./context/SetupContext";
 import { OrganizationProvider } from "./context/OrganizationContext.jsx";
+import "./assets/styles/components/dashboard.css";
+import "./assets/styles/global.css";
+import "./assets/styles/layout.css";
+import "./assets/styles/buttons.css";
+import "./assets/styles/components/dashboard.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
