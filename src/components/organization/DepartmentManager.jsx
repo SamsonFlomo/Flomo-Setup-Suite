@@ -11,15 +11,18 @@ function DepartmentManager() {
     updateDepartment,
 
     deleteDepartment,
+
+    selectedOrganization,
   } = useContext(OrganizationContext);
 
-  const [selectedOrganization, setSelectedOrganization] = useState("");
+  const [selectedOrganizationId, setSelectedOrganizationId] = useState("");
 
   const [departmentName, setDepartmentName] = useState("");
+
   const [editingDepartment, setEditingDepartment] = useState(null);
 
   const organization = organizations.find(
-    (organization) => organization.id === Number(selectedOrganization),
+    (organization) => organization.id === Number(selectedOrganizationId),
   );
 
   function handleSaveDepartment() {
@@ -28,14 +31,16 @@ function DepartmentManager() {
     }
 
     if (editingDepartment) {
+      const updatedDepartment = {
+        id: editingDepartment.id,
+
+        name: departmentName,
+      };
+
       updateDepartment(
         organization.id,
 
-        editingDepartment.id,
-
-        {
-          name: departmentName,
-        },
+        updatedDepartment,
       );
     } else {
       const newDepartment = {
@@ -62,6 +67,12 @@ function DepartmentManager() {
     setDepartmentName(department.name);
   }
 
+  function cancelEdit() {
+    setEditingDepartment(null);
+
+    setDepartmentName("");
+  }
+
   return (
     <section>
       <h2>Department Management</h2>
@@ -69,8 +80,8 @@ function DepartmentManager() {
       <label>Select Organization</label>
 
       <select
-        value={selectedOrganization}
-        onChange={(event) => setSelectedOrganization(event.target.value)}
+        value={selectedOrganizationId}
+        onChange={(event) => setSelectedOrganizationId(event.target.value)}
       >
         <option value="">Select Organization</option>
 
@@ -113,7 +124,7 @@ function DepartmentManager() {
 
           <hr />
 
-          <h3>Add Department</h3>
+          <h3>{editingDepartment ? "Edit Department" : "Add Department"}</h3>
 
           <input
             value={departmentName}
@@ -124,6 +135,8 @@ function DepartmentManager() {
           <button onClick={handleSaveDepartment}>
             {editingDepartment ? "Save Changes" : "Add Department"}
           </button>
+
+          {editingDepartment && <button onClick={cancelEdit}>Cancel</button>}
         </>
       )}
     </section>

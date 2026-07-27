@@ -5,15 +5,19 @@ import { OrganizationContext } from "../../context/OrganizationContext";
 
 import OrganizationForm from "./OrganizationForm";
 import DepartmentManager from "./DepartmentManager";
+import OrganizationCard from "./OrganizationCard";
 
 function OrganizationManager() {
-  const { organizations, deleteOrganization } = useContext(OrganizationContext);
+  const {
+    organizations,
+    deleteOrganization,
+    selectOrganization,
+    selectedOrganization,
+  } = useContext(OrganizationContext);
   const [editingOrganization, setEditingOrganization] = useState(null);
 
   return (
     <section>
-      <h2>Organizations</h2>
-
       <OrganizationForm
         editingOrganization={editingOrganization}
         clearEdit={() => setEditingOrganization(null)}
@@ -21,7 +25,13 @@ function OrganizationManager() {
 
       <hr />
 
-      <DepartmentManager />
+      {selectedOrganization && (
+        <>
+          <h3>Manage Departments</h3>
+
+          <DepartmentManager />
+        </>
+      )}
 
       <hr />
 
@@ -31,22 +41,13 @@ function OrganizationManager() {
         <p>No organizations added yet.</p>
       ) : (
         organizations.map((organization) => (
-          <div key={organization.id}>
-            <h4>{organization.name}</h4>
-
-            <p>Code: {organization.code}</p>
-
-            <p>Domain: {organization.domain}</p>
-
-            <button onClick={() => setEditingOrganization(organization)}>
-              Edit
-            </button>
-
-            <button onClick={() => deleteOrganization(organization.id)}>
-              Delete
-            </button>
-
-          </div>
+          <OrganizationCard
+            key={organization.id}
+            organization={organization}
+            onDelete={deleteOrganization}
+            onEdit={setEditingOrganization}
+            onManageDepartments={selectOrganization}
+          />
         ))
       )}
     </section>
