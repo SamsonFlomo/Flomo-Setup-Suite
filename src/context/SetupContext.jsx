@@ -1,63 +1,239 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
+
+import storageService from "../services/storageService";
 
 
 export const SetupContext = createContext();
 
 
+
+const defaultSetupData = {
+
+    profile: null,
+
+
+    accounts: {
+
+        administrators: [],
+
+        users: []
+
+    },
+
+
+    computer: {
+
+        organization: "",
+
+        department: "",
+
+        type: "PC",
+
+        number: "",
+
+        name: "",
+
+        domain: "",
+
+        ipAddress: "",
+
+        workgroup: ""
+
+    },
+
+
+    software: [],
+
+    printers: [],
+
+
+    options: {
+
+        windowsUpdate: false,
+
+        restart: false,
+
+        generateReport: true
+
+    }
+
+};
+
+
+
+
+
 export function SetupProvider({ children }) {
 
-    const [setupData, setSetupData] = useState({
 
-        profile: "",
 
-        accounts: {
-            administrators: [],
-            users: []
-        },
+    const [setupData, setSetupData] = useState(
 
-       computer: {
+        storageService.loadSetupData(defaultSetupData)
 
-            company: "",
+    );
 
-            department: "",
 
-            type: "PC",
 
-            number: "",
 
-            name: "",
 
-            domain: "",
+    useEffect(() => {
 
-            ipAddress: "",
 
-            workgroup: ""
+        storageService.saveSetupData(
 
-        }, 
+            setupData
 
-        software: [],
+        );
 
-        options: {
-            windowsUpdate: false,
-            restart: false,
-            generateReport: true
+
+    }, [setupData]);
+
+
+
+
+
+
+
+    function applyProfile(profile) {
+
+
+        if (!profile) {
+
+            return;
+
         }
 
-    });
+
+
+        setSetupData((previousData) => ({
+
+
+            ...previousData,
+
+
+            profile: profile,
+
+
+
+            computer: {
+
+
+                ...previousData.computer,
+
+
+                domain:
+
+                    profile.settings.domainJoin
+
+                    ? "enabled"
+
+                    : "",
+
+
+
+                workgroup:
+
+                    !profile.settings.domainJoin
+
+                    ? "WORKGROUP"
+
+                    : ""
+
+            },
+
+
+
+            software:
+
+
+                profile.settings.installOffice
+
+                ?
+
+                [
+
+                    "Microsoft Office"
+
+                ]
+
+                :
+
+                [],
+
+
+
+            accounts: {
+
+
+                ...previousData.accounts,
+
+
+
+                users:
+
+
+                    profile.settings.createStandardUser
+
+                    ?
+
+
+                    [
+
+                        {
+
+                            id: Date.now(),
+
+                            name: "Standard User"
+
+                        }
+
+                    ]
+
+                    :
+
+
+                    []
+
+            }
+
+
+
+        }));
+
+    }
+
+
+
+
 
 
     return (
 
+
         <SetupContext.Provider
+
+
             value={{
+
                 setupData,
-                setSetupData
+
+                setSetupData,
+
+                applyProfile
+
             }}
+
+
         >
+
 
             {children}
 
+
         </SetupContext.Provider>
 
+
     );
+
 }

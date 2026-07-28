@@ -2,6 +2,8 @@ const ROUTES = {
 
     DASHBOARD: "/dashboard",
 
+    HISTORY: "/history",
+
     PROFILE_SELECTION: "/setup/profile",
 
     SETUP: "/setup",

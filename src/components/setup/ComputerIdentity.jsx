@@ -14,8 +14,17 @@ function ComputerIdentity() {
   const { organizations } = useContext(OrganizationContext);
 
   const selectedOrganization = organizations.find(
-    (organization) => organization.id === setupData.computer.organization,
+    (organization) =>
+      organization.id === Number(setupData.computer.organization),
   );
+
+  const selectedDepartment =
+    selectedOrganization?.departments?.find(
+        (department)=>
+            department.id === Number(
+                setupData.computer.department
+            )
+    );
 
   function updateComputer(field, value) {
     setSetupData((previousData) => ({
@@ -32,7 +41,7 @@ function ComputerIdentity() {
   useEffect(() => {
     if (
       !selectedOrganization ||
-      !setupData.computer.department ||
+       !selectedDepartment ||
       !setupData.computer.type ||
       !setupData.computer.number
     ) {
@@ -42,7 +51,7 @@ function ComputerIdentity() {
     const name = generateComputerName(
       selectedOrganization.code,
 
-      setupData.computer.department,
+      selectedDepartment.name,
 
       setupData.computer.type,
 
@@ -91,7 +100,7 @@ function ComputerIdentity() {
             computer: {
               ...previousData.computer,
 
-              organization: organizationId,
+              organization: Number(organizationId),
 
               department: "",
 

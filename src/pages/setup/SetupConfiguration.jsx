@@ -1,4 +1,6 @@
 import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import ROUTES from "../../constants/routes";
 
 import { SetupContext } from "../../context/SetupContext";
 
@@ -11,51 +13,66 @@ import PrinterConfiguration from "../../components/setup/PrinterConfiguration";
 import SetupOptions from "../../components/setup/SetupOptions";
 
 function SetupConfiguration() {
+  const { setupData } = useContext(SetupContext);
+  const navigate = useNavigate();
 
-    const { setupData } = useContext(SetupContext);
+  const profileId = setupData.profile?.id;
 
-    const isPersonal =
-        setupData.profile === "personal";
+  const isPersonal = profileId === "personal";
 
-    const isCompanyLocal =
-        setupData.profile === "company-local";
+  const isCompanyLocal = profileId === "company-local";
 
-    const isCompanyDomain =
-        setupData.profile === "company-domain";
+  const isCompanyDomain = profileId === "company-domain";
 
-    return (
+  return (
+    <div>
+      <h1>Setup Configuration</h1>
 
+      {setupData.profile && <p>Profile: {setupData.profile.title}</p>}
+
+      <ComputerIdentity />
+
+      {(isCompanyLocal || isCompanyDomain) && <DepartmentSettings />}
+
+      {isCompanyDomain && <NetworkSettings />}
+
+      <UserManagement />
+
+      <SoftwareSelection />
+
+      {(isCompanyLocal || isCompanyDomain) && <PrinterConfiguration />}
+
+      <SetupOptions />
+
+      <p>Computer Name: {setupData.computer.name}</p>
+
+      <button onClick={() => navigate(ROUTES.REVIEW)}>Review Setup</button>
+
+      {/* Testing the SetupConfiguration data */}
+
+      <h1>Setup Configuration</h1>
+
+      {setupData.profile && (
         <div>
+          <h3>Selected Profile Settings</h3>
 
-            <h1>Setup Configuration</h1>
+          <p>
+            Domain Join: {setupData.profile.settings.domainJoin ? "Yes" : "No"}
+          </p>
 
-            <ComputerIdentity />
+          <p>
+            Office Installation:{" "}
+            {setupData.profile.settings.installOffice ? "Yes" : "No"}
+          </p>
 
-            {(isCompanyLocal || isCompanyDomain) &&
-                <DepartmentSettings />
-            }
-
-            {isCompanyDomain &&
-                <NetworkSettings />
-            }
-
-            <UserManagement />
-
-            <SoftwareSelection />
-
-            {(isCompanyLocal || isCompanyDomain) &&
-                <PrinterConfiguration />
-            }
-
-            <SetupOptions />
-
-            <p>
-                Computer Name: {setupData.computer.name}
-            </p>
-
+          <p>
+            Standard User:{" "}
+            {setupData.profile.settings.createStandardUser ? "Yes" : "No"}
+          </p>
         </div>
-
-    );
+      )}
+    </div>
+  );
 }
 
 export default SetupConfiguration;

@@ -6,71 +6,41 @@ import profiles from "../../data/profiles";
 import ProfileCard from "../../components/setup/ProfileCard";
 import ROUTES from "../../constants/routes";
 
-
 function ProfileSelection() {
+  const { setupData, applyProfile } = useContext(SetupContext);
 
-    const { setupData, setSetupData } = useContext(SetupContext);
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
-
-
-    function continueSetup(){
-
-        if(!setupData.profile){
-            return;
-        }
-
-        navigate(ROUTES.SETUP);
+  function continueSetup() {
+    if (!setupData.profile) {
+      return;
     }
 
+    navigate(ROUTES.SETUP);
+  }
 
-    return (
-        <div>
+  return (
+    <div>
+      <h1>Flomo Setup Suite</h1>
 
-            <h1>Flomo Setup Suite</h1>
+      <p>Select the type of computer you want to configure.</p>
 
-            <p>
-                Select the type of computer you want to configure.
-            </p>
+      {profiles.map((profile) => (
+        <ProfileCard
+          key={profile.id}
+          id={profile.id}
+          title={profile.title}
+          description={profile.description}
+          selected={setupData.profile?.id === profile.id}
+          onSelect={() => applyProfile(profile)}
+        />
+      ))}
 
-
-            {profiles.map((profile) => (
-
-                <ProfileCard
-
-                    key={profile.id}
-
-                    id={profile.id}
-
-                    title={profile.title}
-
-                    description={profile.description}
-
-                    selected={setupData.profile === profile.id}
-
-                    onSelect={(id) =>
-                        setSetupData((previousData) => ({
-                            ...previousData,
-                            profile: id
-                        }))
-                    }
-
-                />
-
-            ))}
-
-
-            <button
-                disabled={!setupData.profile}
-                onClick={continueSetup}
-            >
-                Continue
-            </button>
-
-
-        </div>
-    );
+      <button disabled={!setupData.profile} onClick={continueSetup}>
+        Continue
+      </button>
+    </div>
+  );
 }
-
 
 export default ProfileSelection;
