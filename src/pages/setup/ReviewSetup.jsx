@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { SetupContext } from "../../context/SetupContext";
 import { OrganizationContext } from "../../context/OrganizationContext";
+import SaveTemplate from "../../components/setup/SaveTemplate";
 
 import ROUTES from "../../constants/routes";
 
@@ -152,7 +153,7 @@ function ReviewSetup() {
                 {" "}
                 {setupData.options.generateReport ? "Yes" : "No"}
             </p>
-
+ 
             <hr />
 
             <button
@@ -166,6 +167,10 @@ function ReviewSetup() {
             >
                 Start Deployment
             </button>
+
+            <hr />
+
+            <SaveTemplate />
 
         </section>
 

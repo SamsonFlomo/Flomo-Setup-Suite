@@ -11,17 +11,32 @@ import "./assets/styles/layout.css";
 import "./assets/styles/buttons.css";
 import "./assets/styles/components/dashboard.css";
 import { DeploymentProvider } from "./context/DeploymentContext";
+import { TemplateProvider } from "./context/TemplateContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
+<React.StrictMode>
+
     <BrowserRouter>
+
       <OrganizationProvider>
-        <SetupProvider>
+
+        <TemplateProvider>
+
           <DeploymentProvider>
-            <App />
+
+            <SetupProvider>
+
+              <App />
+
+            </SetupProvider>
+
           </DeploymentProvider>
-        </SetupProvider>
+
+        </TemplateProvider>
+
       </OrganizationProvider>
+
     </BrowserRouter>
+
   </React.StrictMode>,
 );

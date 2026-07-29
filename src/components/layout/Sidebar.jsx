@@ -17,6 +17,8 @@ function Sidebar() {
         <NavLink to={ROUTES.SETTINGS}>Settings</NavLink>
 
         <NavLink to={ROUTES.HISTORY}>Setup History</NavLink>
+
+        <NavLink to={ROUTES.TEMPLATES}>Templates</NavLink>
       </nav>
     </aside>
   );

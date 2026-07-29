@@ -13,6 +13,7 @@ import Organizations from "./pages/organization/Organizations";
 import ApplicationSettings from "./pages/settings/ApplicationSettings";
 import SetupHistory from "./pages/history/SetupHistory";
 import SetupDetails from "./pages/history/SetupDetails";
+import Templates from "./pages/templates/Templates";
 
 function App() {
   return (
@@ -39,6 +40,8 @@ function App() {
         <Route path="/setup/completion" element={<Completion />} />
 
         <Route path="/history/:id" element={<SetupDetails />} />
+
+        <Route path="/templates" element={<Templates />} />
       </Route>
     </Routes>
   );

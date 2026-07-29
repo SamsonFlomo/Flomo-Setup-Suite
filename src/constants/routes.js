@@ -18,7 +18,9 @@ const ROUTES = {
 
     ORGANIZATION_DETAILS: "/organization/:id",
 
-    SETTINGS: "/settings"
+    SETTINGS: "/settings",
+
+    TEMPLATES: "/templates",
 
 };
 

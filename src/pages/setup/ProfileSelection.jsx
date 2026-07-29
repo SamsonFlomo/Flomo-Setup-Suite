@@ -4,6 +4,7 @@ import { useContext } from "react";
 import { SetupContext } from "../../context/SetupContext";
 import profiles from "../../data/profiles";
 import ProfileCard from "../../components/setup/ProfileCard";
+import TemplateLoader from "../../components/setup/TemplateLoader";
 import ROUTES from "../../constants/routes";
 
 function ProfileSelection() {
@@ -22,6 +23,8 @@ function ProfileSelection() {
   return (
     <div>
       <h1>Flomo Setup Suite</h1>
+
+      <TemplateLoader />
 
       <p>Select the type of computer you want to configure.</p>
 
