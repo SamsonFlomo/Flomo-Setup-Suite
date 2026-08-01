@@ -1,0 +1,42 @@
+{
+  "name": "flomo-setup-suite",
+  "version": "1.0.0",
+  "description": "windows computer setup and automation platform ",
+  "keywords": [
+    "windows",
+    "automation",
+    "powershell",
+    "electron",
+    "setup",
+    "deployment"
+  ],
+  "homepage": "https://github.com/SamsonFlomo/Flomo-Setup-Suite#readme",
+  "bugs": {
+    "url": "https://github.com/SamsonFlomo/Flomo-Setup-Suite/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SamsonFlomo/Flomo-Setup-Suite.git"
+  },
+  "license": "MIT",
+  "author": "Samson Flomo",
+  "type": "commonjs",
+  "main": "electron/main.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "dev": "vite",
+    "electron": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^43.1.0",
+    "vite": "^8.1.5"
+  },
+  "dependencies": {
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-router-dom": "^7.18.1"
+  }
+}

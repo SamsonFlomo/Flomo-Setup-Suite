@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 
-function TemplateEditForm({
+function TemplateEditor({
     template,
     onSave,
     onCancel
@@ -74,4 +74,4 @@ function TemplateEditForm({
 }
 
 
-export default TemplateEditForm;
+export default TemplateEditor;

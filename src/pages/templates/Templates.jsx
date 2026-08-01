@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 
 import { TemplateContext } from "../../context/TemplateContext";
-import TemplateEditForm from "../../components/templates/TemplateEditForm";
+import TemplateEditor from "../../components/templates/TemplateEditor";
 import TemplateCard from "../../components/templates/TemplateCard";
 import templateCategories from "../../data/templateCategories";
 
@@ -53,7 +53,7 @@ function Templates() {
       <p>Manage reusable computer configurations.</p>
 
       {editingTemplate && (
-        <TemplateEditForm
+        <TemplateEditor
           template={editingTemplate}
           onSave={(updated) => {
             updateTemplate(updated);
