@@ -1,35 +1,32 @@
-export default class ScriptBuilder {
+class ScriptBuilder {
 
 
-    constructor(){
+constructor(){
 
-        this.lines = [];
+    this.lines=[];
 
-    }
+}
 
 
+add(command){
 
-    add(command){
+    if(command){
 
-        if(command){
-
-            this.lines.push(command);
-
-        }
+        this.lines.push(command);
 
     }
 
+}
 
 
-    build(){
+build(){
 
-        return this.lines.join(
+    return this.lines.join("\n\n");
 
-            "\n\n"
-
-        );
-
-    }
+}
 
 
 }
+
+
+module.exports = ScriptBuilder;

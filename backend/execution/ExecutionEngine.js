@@ -1,37 +1,76 @@
-import ExecutionResult from "./ExecutionResult";
+class ExecutionEngine {
 
-export default class ExecutionEngine {
+
 
     async execute(script) {
 
-        console.log("Executing PowerShell Script...");
 
-        console.log(script);
 
-        // Placeholder until Electron backend is connected
+        if (!script) {
 
-        return new Promise((resolve) => {
 
-            setTimeout(() => {
+            return {
 
-                resolve(
 
-                    new ExecutionResult({
+                success: false,
 
-                        success: true,
+                output: "",
 
-                        output: "Script executed successfully.",
+                errors: "No script provided"
 
-                        error: ""
+            };
 
-                    })
+
+        }
+
+
+
+
+
+        try {
+
+
+            const result =
+
+                await window.fss.powershell.execute(
+
+                    script
 
                 );
 
-            }, 2000);
 
-        });
+
+            return result;
+
+
+
+        } catch(error) {
+
+
+
+            return {
+
+
+                success: false,
+
+                output: "",
+
+                errors: error.message
+
+
+            };
+
+
+        }
+
+
 
     }
 
+
+
 }
+
+
+
+export default new ExecutionEngine();

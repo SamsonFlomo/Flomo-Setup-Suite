@@ -1,21 +1,21 @@
-export function createTask(
+function createTask(
     id,
     type,
     data
 ){
 
+    return {
 
-return {
+        id,
+        type,
+        status:"pending",
+        data
 
-    id,
-
-    type,
-
-    status:"pending",
-
-    data
-
-};
-
+    };
 
 }
+
+
+module.exports = {
+    createTask
+};

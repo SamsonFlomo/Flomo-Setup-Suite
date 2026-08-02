@@ -1,15 +1,14 @@
-import TaskTypes from "./TaskTypes";
+const TaskTypes =
+require("./TaskTypes");
 
-import {
-createTask
-}
-from "./TaskFactory";
+const {
+    createTask
+} =
+require("./TaskFactory");
 
 
 
-export default function createExecutionPlan(
-setupData
-){
+function createExecutionPlan(setupData){
 
 
 const tasks = [];

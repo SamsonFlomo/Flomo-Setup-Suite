@@ -1,6 +1,15 @@
 const { app, BrowserWindow } = require("electron");
 const path = require("path");
 
+const registerDeploymentIPC =
+require("./ipc/deploymentIPC");
+
+const registerPowerShellIPC =
+require("./ipc/powershellIPC");
+
+const registerExecutionIPC =
+require("./ipc/executionIPC");
+
 function createWindow() {
 
     const window = new BrowserWindow({
@@ -29,6 +38,15 @@ function createWindow() {
 
 app.whenReady().then(() => {
 
+
+    registerDeploymentIPC();
+
+    registerPowerShellIPC();
+
+    registerExecutionIPC();
+
+
     createWindow();
+
 
 });

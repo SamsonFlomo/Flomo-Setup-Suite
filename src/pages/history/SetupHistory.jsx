@@ -18,7 +18,7 @@ function SetupHistory() {
           .reverse()
           .map((deployment) => (
             <div key={deployment.id}>
-              <h3>{deployment.computerName || "Unnamed Computer"}</h3>
+              <h3>{deployment.computer?.name|| "Unnamed Computer"}</h3>
 
               <p>Profile: {deployment.profile?.title}</p>
 
