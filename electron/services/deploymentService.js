@@ -1,13 +1,10 @@
-const createExecutionPlan =
-require("../../backend/planner/ExecutionPlanner");
+import createExecutionPlan from "../../backend/planner/ExecutionPlanner.js";
 
 
-const generateScript =
-require("../../backend/powershell/ScriptGenerator");
+import generateScript from "../../backend/powershell/ScriptGenerator.js";
 
 
-const executionService =
-require("./executionService");
+import executionService from "./executionService.js";
 
 
 
@@ -98,4 +95,4 @@ class DeploymentService {
 
 
 
-module.exports = new DeploymentService();
+export default new DeploymentService();

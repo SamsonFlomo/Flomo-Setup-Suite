@@ -1,52 +1,45 @@
-const { app, BrowserWindow } = require("electron");
-const path = require("path");
+import { app, BrowserWindow } from "electron";
 
-const registerDeploymentIPC =
-require("./ipc/deploymentIPC");
+import path from "path";
 
-const registerPowerShellIPC =
-require("./ipc/powershellIPC");
+import { fileURLToPath } from "url";
 
-const registerExecutionIPC =
-require("./ipc/executionIPC");
+import registerDeploymentIPC from "./ipc/deploymentIPC.js";
+
+import registerExecutionIPC from "./ipc/executionIPC.js";
+
+import registerPowerShellIPC from "./ipc/powershellIPC.js";
+
+const __filename = fileURLToPath(import.meta.url);
+
+const __dirname = path.dirname(__filename);
 
 function createWindow() {
+  const window = new BrowserWindow({
+    width: 1200,
 
-    const window = new BrowserWindow({
+    height: 800,
 
-        width: 1200,
+    title: "Flomo Setup Suite",
 
-        height: 800,
+    webPreferences: {
+      preload: path.join(__dirname, "preload.js"),
 
-        title: "Flomo Setup Suite",
+      contextIsolation: true,
 
-        webPreferences: {
+      nodeIntegration: false,
+    },
+  });
 
-            preload: path.join(__dirname, "preload.js"),
-
-            contextIsolation: true,
-
-            nodeIntegration: false
-
-        }
-
-    });
-
-    window.loadURL("http://localhost:5173");
-
+  window.loadURL("http://localhost:5173");
 }
 
 app.whenReady().then(() => {
+  registerDeploymentIPC();
 
+  registerPowerShellIPC();
 
-    registerDeploymentIPC();
+  registerExecutionIPC();
 
-    registerPowerShellIPC();
-
-    registerExecutionIPC();
-
-
-    createWindow();
-
-
+  createWindow();
 });

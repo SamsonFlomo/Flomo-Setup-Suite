@@ -1,4 +1,4 @@
-const { spawn } = require("child_process");
+import { spawn } from "child_process";
 
 
 
@@ -113,4 +113,4 @@ class PowerShellService {
 
 
 
-module.exports = new PowerShellService();
+export default new PowerShellService();

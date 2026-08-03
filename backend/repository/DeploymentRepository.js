@@ -67,4 +67,4 @@ class DeploymentRepository {
 }
 
 
-module.exports = new DeploymentRepository();
+export default new DeploymentRepository();

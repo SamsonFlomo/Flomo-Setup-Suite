@@ -1,9 +1,6 @@
-const CommandLibrary =
-require("./CommandLibrary");
+import CommandLibrary from "./CommandLibrary.js";
 
-
-const ScriptBuilder =
-require("./ScriptBuilder");
+import ScriptBuilder from "./ScriptBuilder.js";
 
 
 
@@ -37,4 +34,4 @@ function generateScript(tasks){
 
 
 
-module.exports = generateScript;
+export default generateScript;

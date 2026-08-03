@@ -1,200 +1,148 @@
-const TaskTypes =
-require("./TaskTypes");
+import TaskTypes from "./TaskTypes.js";
 
-const {
+import {
     createTask
-} =
-require("./TaskFactory");
-
-
-
-function createExecutionPlan(setupData){
-
-
-const tasks = [];
-
-let id = 1;
-
-
-
-// Computer Name
-
-if(setupData.computer.name){
-
-
-tasks.push(
-
-createTask(
-
-id++,
-
-TaskTypes.RENAME_COMPUTER,
-
-{
-
-name:
-
-setupData.computer.name
-
 }
+from "./TaskFactory.js";
 
-)
 
-);
 
+export default function createExecutionPlan(setupData){
 
-}
 
+    const tasks = [];
 
+    let id = 1;
 
-// Users
 
-setupData.accounts.users.forEach(
-user=>{
+    if(setupData.computer.name){
 
+        tasks.push(
 
-tasks.push(
+            createTask(
 
-createTask(
+                id++,
 
-id++,
+                TaskTypes.RENAME_COMPUTER,
 
-TaskTypes.CREATE_USER,
+                {
+                    name:
+                    setupData.computer.name
+                }
 
-user
+            )
 
-)
+        );
 
-);
+    }
 
 
-}
+    setupData.accounts.users.forEach(user=>{
 
-);
+        tasks.push(
 
+            createTask(
 
+                id++,
 
-// Software
+                TaskTypes.CREATE_USER,
 
-setupData.software.forEach(
-software=>{
+                user
 
+            )
 
-tasks.push(
+        );
 
-createTask(
+    });
 
-id++,
 
-TaskTypes.INSTALL_SOFTWARE,
 
-{
+    setupData.software.forEach(software=>{
 
-software
+        tasks.push(
 
-}
+            createTask(
 
-)
+                id++,
 
-);
+                TaskTypes.INSTALL_SOFTWARE,
 
+                {
+                    software
+                }
 
-}
+            )
 
-);
+        );
 
+    });
 
 
-// Printers
 
-setupData.printers.forEach(
-printer=>{
+    setupData.printers.forEach(printer=>{
 
+        tasks.push(
 
-tasks.push(
+            createTask(
 
-createTask(
+                id++,
 
-id++,
+                TaskTypes.INSTALL_PRINTER,
 
-TaskTypes.INSTALL_PRINTER,
+                {
+                    printer
+                }
 
-{
+            )
 
-printer
+        );
 
-}
+    });
 
-)
 
-);
 
+    if(setupData.computer.domain){
 
-}
+        tasks.push(
 
-);
+            createTask(
 
+                id++,
 
+                TaskTypes.JOIN_DOMAIN,
 
-// Domain
+                {
+                    domain:
+                    setupData.computer.domain
+                }
 
-if(
-setupData.computer.domain
-){
+            )
 
+        );
 
-tasks.push(
+    }
 
-createTask(
 
-id++,
 
-TaskTypes.JOIN_DOMAIN,
+    if(setupData.options.generateReport){
 
-{
+        tasks.push(
 
-domain:
+            createTask(
 
-setupData.computer.domain
+                id++,
 
-}
+                TaskTypes.GENERATE_REPORT,
 
-)
+                {}
 
-);
+            )
 
+        );
 
-}
+    }
 
 
-
-// Report
-
-if(
-setupData.options.generateReport
-){
-
-
-tasks.push(
-
-createTask(
-
-id++,
-
-TaskTypes.GENERATE_REPORT,
-
-{}
-
-)
-
-);
-
-
-}
-
-
-
-return tasks;
-
+    return tasks;
 
 }

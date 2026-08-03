@@ -1,5 +1,4 @@
-const powershellService =
-require("./powershellService");
+import powershellService from "./powershellService.js";
 
 
 
@@ -76,4 +75,4 @@ class ExecutionService {
 
 
 
-module.exports = new ExecutionService();
+export default new ExecutionService();

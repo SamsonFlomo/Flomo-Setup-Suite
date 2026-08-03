@@ -1,8 +1,8 @@
-const { ipcMain } = require("electron");
+import { ipcMain } from "electron";
 
-const deploymentRepository = require("../../backend/repository/DeploymentRepository");
+import deploymentRepository from "../../backend/repository/DeploymentRepository.js";
 
-const deploymentService = require("../services/deploymentService");
+import deploymentService from "../services/deploymentService.js";
 
 function registerDeploymentIPC() {
   ipcMain.handle("deployment:getAll", () => {
@@ -30,4 +30,4 @@ function registerDeploymentIPC() {
   });
 }
 
-module.exports = registerDeploymentIPC;
+export default registerDeploymentIPC;

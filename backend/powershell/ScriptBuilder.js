@@ -29,4 +29,4 @@ build(){
 }
 
 
-module.exports = ScriptBuilder;
+export default ScriptBuilder;

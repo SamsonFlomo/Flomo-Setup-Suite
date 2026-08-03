@@ -1,4 +1,4 @@
-function createTask(
+export function createTask(
     id,
     type,
     data
@@ -7,15 +7,13 @@ function createTask(
     return {
 
         id,
+
         type,
+
         status:"pending",
+
         data
 
     };
 
-}
-
-
-module.exports = {
-    createTask
 };

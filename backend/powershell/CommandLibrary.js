@@ -122,4 +122,4 @@ Write-Host "Generating report"
 };
 
 
-module.exports = CommandLibrary;
+export default CommandLibrary;

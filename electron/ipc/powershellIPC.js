@@ -1,34 +1,15 @@
-const { ipcMain } = require("electron");
+import { ipcMain } from "electron";
 
-const powershellService =
-    require("../services/powershellService");
+import powershellService from "../services/powershellService.js";
 
+function registerPowerShellIPC() {
+  ipcMain.handle(
+    "powershell:execute",
 
-
-function registerPowerShellIPC(){
-
-
-
-    ipcMain.handle(
-
-        "powershell:execute",
-
-        async (event, script) => {
-
-
-            return await powershellService.execute(
-                script
-            );
-
-
-        }
-
-    );
-
-
-
+    async (event, script) => {
+      return await powershellService.execute(script);
+    },
+  );
 }
 
-
-
-module.exports = registerPowerShellIPC;
+export default registerPowerShellIPC;

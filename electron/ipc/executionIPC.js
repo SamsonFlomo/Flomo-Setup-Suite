@@ -1,38 +1,62 @@
-const { ipcMain } = require("electron");
+import { ipcMain } from "electron";
+
+import powershellService from "../services/powershellService.js";
 
 
-const executionService =
-require("../services/executionService");
-
-
-
-
-function registerExecutionIPC(){
-
+function registerExecutionIPC() {
 
 
     ipcMain.handle(
-
-        "execution:run",
-
-        async(event, script)=>{
+        "execution:start",
+        async (event, data) => {
 
 
-            return await executionService.execute(
-
-                script
-
+            console.log(
+                "Execution requested"
             );
 
 
+            const {
+                script
+            } = data;
+
+
+
+            if (!script) {
+
+
+                return {
+
+                    success:false,
+
+                    output:"",
+
+                    errors:"No PowerShell script received"
+
+                };
+
+
+            }
+
+
+
+
+            const result =
+                await powershellService.execute(
+                    script
+                );
+
+
+
+            return result;
+
+
         }
-
     );
-
 
 
 }
 
 
 
-module.exports = registerExecutionIPC;
+export default registerExecutionIPC;
