@@ -13,30 +13,22 @@ import "./assets/styles/components/dashboard.css";
 import { DeploymentProvider } from "./context/DeploymentContext";
 import { TemplateProvider } from "./context/TemplateContext";
 
+import executionBridge from "./services/executionBridge";
+
+executionBridge.initialize();
+
 ReactDOM.createRoot(document.getElementById("root")).render(
-<React.StrictMode>
-
+  <React.StrictMode>
     <BrowserRouter>
-
       <OrganizationProvider>
-
         <TemplateProvider>
-
           <DeploymentProvider>
-
             <SetupProvider>
-
               <App />
-
             </SetupProvider>
-
           </DeploymentProvider>
-
         </TemplateProvider>
-
       </OrganizationProvider>
-
     </BrowserRouter>
-
   </React.StrictMode>,
 );

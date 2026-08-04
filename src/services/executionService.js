@@ -9,11 +9,9 @@ class ExecutionService {
             window.fss.execution
         ){
 
-
             return await window.fss.execution.start(
                 data
             );
-
 
         }
 
@@ -31,7 +29,33 @@ class ExecutionService {
     }
 
 
+
+
+
+    subscribeProgress(callback){
+
+
+        if(
+            window.fss &&
+            window.fss.execution
+        ){
+
+            return window.fss.execution.onProgress(
+                callback
+            );
+
+        }
+
+
+
+        return ()=>{};
+
+
+    }
+
+
 }
+
 
 
 export default new ExecutionService();

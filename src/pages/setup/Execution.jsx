@@ -9,9 +9,9 @@ import { OrganizationContext } from "../../context/OrganizationContext";
 
 import deploymentPipeline from "../../services/deploymentPipeline";
 
-import taskDisplayName from "../../utils/taskDisplayName";
-
 import executionService from "../../services/executionService";
+
+import createExecutionPlan from "../../../backend/planner/ExecutionPlanner.js";
 
 function Execution() {
   const navigate = useNavigate();
@@ -32,18 +32,46 @@ function Execution() {
 
   const [steps, setSteps] = useState([]);
 
+  const updateProgress = (progress) => {
+    if (progress.type !== "task") {
+      return;
+    }
+
+    setSteps((previous) =>
+      previous.map((step) => {
+        if (step.id === progress.taskId) {
+          return {
+            ...step,
+
+            status: progress.status,
+          };
+        }
+
+        return step;
+      }),
+    );
+  };
+
   useEffect(() => {
+    const cleanup = executionService.subscribeProgress(updateProgress);
+
+    return () => {
+      cleanup();
+    };
+
     async function executeDeployment() {
       try {
-        setSteps((previous) =>
-          previous.map((step, index) =>
-            index === 0 ? { ...step, status: "running" } : step,
-          ),
-        );
+        const plannedTasks = createExecutionPlan(setupData);
 
-        await executionService.start({
-          setupData,
-        });
+        setSteps(
+          plannedTasks.map((task) => ({
+            id: task.id,
+
+            name: task.name,
+
+            status: "pending",
+          })),
+        );
 
         const deploymentResult = await deploymentPipeline.deploy(setupData);
 
@@ -51,16 +79,9 @@ function Execution() {
           deploymentResult.tasks.map((task) => ({
             id: task.id,
 
-            name: taskDisplayName(task.type),
+            name: task.name,
 
-            status: "completed",
-          })),
-        );
-
-        setSteps((previous) =>
-          previous.map((step) => ({
-            ...step,
-            status: "completed",
+            status: "pending",
           })),
         );
 
@@ -121,6 +142,10 @@ function Execution() {
     }
 
     executeDeployment();
+
+    return () => {
+      executionProgressService.unsubscribe(updateProgress);
+    };
   }, []);
 
   return (

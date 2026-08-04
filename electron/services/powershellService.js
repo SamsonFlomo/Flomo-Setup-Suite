@@ -1,14 +1,33 @@
 import { spawn } from "child_process";
 
 
-
 class PowerShellService {
 
 
-    execute(script) {
+    execute(script, onProgress = null) {
 
 
         return new Promise((resolve) => {
+
+
+            if (onProgress) {
+
+                onProgress({
+
+                    type: "system",
+
+                    message:
+                    "PowerShell execution started",
+
+                    status:
+                    "running"
+
+                });
+
+            }
+
+
+
 
 
             const process = spawn(
@@ -33,9 +52,14 @@ class PowerShellService {
 
 
 
+
+
             let stdout = "";
 
             let stderr = "";
+
+
+
 
 
 
@@ -45,11 +69,44 @@ class PowerShellService {
 
                 (data) => {
 
-                    stdout += data.toString();
+
+                    const output =
+                        data.toString();
+
+
+                    stdout += output;
+
+
+
+                    if(onProgress){
+
+
+                        onProgress({
+
+                            type:
+                            "output",
+
+
+                            message:
+                            output.trim(),
+
+
+                            status:
+                            "running"
+
+                        });
+
+
+                    }
+
+
 
                 }
 
             );
+
+
+
 
 
 
@@ -60,11 +117,44 @@ class PowerShellService {
 
                 (data) => {
 
-                    stderr += data.toString();
+
+                    const error =
+                        data.toString();
+
+
+                    stderr += error;
+
+
+
+                    if(onProgress){
+
+
+                        onProgress({
+
+                            type:
+                            "error",
+
+
+                            message:
+                            error.trim(),
+
+
+                            status:
+                            "running"
+
+                        });
+
+
+                    }
+
 
                 }
 
             );
+
+
+
+
 
 
 
@@ -77,17 +167,57 @@ class PowerShellService {
                 (code) => {
 
 
+
+                    if(onProgress){
+
+
+                        onProgress({
+
+                            type:
+                            "system",
+
+
+                            message:
+                            "PowerShell execution completed",
+
+
+                            status:
+                            code === 0
+                            ?
+                            "success"
+                            :
+                            "failed"
+
+                        });
+
+
+                    }
+
+
+
+
+
                     resolve({
 
-                        success: code === 0,
 
-                        exitCode: code,
+                        success:
+                        code === 0,
 
-                        output: stdout,
 
-                        errors: stderr
+                        exitCode:
+                        code,
+
+
+                        output:
+                        stdout,
+
+
+                        errors:
+                        stderr
+
 
                     });
+
 
 
                 }
@@ -98,9 +228,16 @@ class PowerShellService {
 
 
 
-            process.stdin.write(script);
+
+
+
+            process.stdin.write(
+                script
+            );
+
 
             process.stdin.end();
+
 
 
         });
@@ -110,7 +247,6 @@ class PowerShellService {
 
 
 }
-
 
 
 export default new PowerShellService();

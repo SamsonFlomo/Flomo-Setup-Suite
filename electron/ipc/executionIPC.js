@@ -1,62 +1,74 @@
 import { ipcMain } from "electron";
 
 import powershellService from "../services/powershellService.js";
-
+import { generateTaskScript } from "../../backend/powershell/ScriptGenerator.js";
 
 function registerExecutionIPC() {
+  ipcMain.handle("execution:start", async (event, data) => {
+    const { tasks } = data;
 
+    if (!tasks || tasks.length === 0) {
+      return {
+        success: false,
 
-    ipcMain.handle(
-        "execution:start",
-        async (event, data) => {
+        output: "",
 
+        errors: "No tasks received",
+      };
+    }
 
-            console.log(
-                "Execution requested"
-            );
+    const results = [];
 
+    for (const task of tasks) {
+      event.sender.send(
+        "execution:progress",
 
-            const {
-                script
-            } = data;
+        {
+          type: "task",
 
+          taskId: task.id,
 
+          name: task.name,
 
-            if (!script) {
+          status: "running",
+        },
+      );
 
+      const script = generateTaskScript(task);
 
-                return {
+      const result = await powershellService.execute(script);
 
-                    success:false,
+      results.push({
+        task,
 
-                    output:"",
+        result,
+      });
 
-                    errors:"No PowerShell script received"
+      event.sender.send(
+        "execution:progress",
 
-                };
+        {
+          type: "task",
 
+          taskId: task.id,
 
-            }
+          name: task.name,
 
+          status: result.success ? "success" : "failed",
 
+          output: result.output,
 
+          error: result.errors,
+        },
+      );
+    }
 
-            const result =
-                await powershellService.execute(
-                    script
-                );
+    return {
+      success: results.every((item) => item.result.success),
 
-
-
-            return result;
-
-
-        }
-    );
-
-
+      results,
+    };
+  });
 }
-
-
 
 export default registerExecutionIPC;

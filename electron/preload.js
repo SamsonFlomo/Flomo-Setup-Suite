@@ -1,102 +1,59 @@
-const {
-    contextBridge,
-    ipcRenderer
-} = require("electron");
+const { contextBridge, ipcRenderer } = require("electron");
 
+contextBridge.exposeInMainWorld("fss", {
+  deployments: {
+    execute(data) {
+      return ipcRenderer.invoke("deployment:execute", data);
+    },
 
-contextBridge.exposeInMainWorld(
-    "fss",
-    {
+    getAll() {
+      return ipcRenderer.invoke("deployment:getAll");
+    },
 
+    create(data) {
+      return ipcRenderer.invoke("deployment:create", data);
+    },
 
-        deployments: {
+    getById(id) {
+      return ipcRenderer.invoke("deployment:getById", id);
+    },
 
+    delete(id) {
+      return ipcRenderer.invoke("deployment:delete", id);
+    },
+  },
 
-            execute(data) {
+  execution: {
+    start(data) {
+      return ipcRenderer.invoke("execution:start", data);
+    },
 
-                return ipcRenderer.invoke(
-                    "deployment:execute",
-                    data
-                );
+    onProgress(callback) {
+      const listener = (event, progress) => {
+        callback(progress);
+      };
 
-            },
+      ipcRenderer.on("execution:progress", listener);
 
+      return () => {
+        ipcRenderer.removeListener("execution:progress", listener);
+      };
+    },
+  },
 
-            getAll() {
+  powershell: {
+    execute(script) {
+      return ipcRenderer.invoke("powershell:execute", script);
+    },
 
-                return ipcRenderer.invoke(
-                    "deployment:getAll"
-                );
+    onProgress(callback) {
+      ipcRenderer.on(
+        "execution:progress",
 
-            },
-
-
-            create(data) {
-
-                return ipcRenderer.invoke(
-                    "deployment:create",
-                    data
-                );
-
-            },
-
-
-            getById(id) {
-
-                return ipcRenderer.invoke(
-                    "deployment:getById",
-                    id
-                );
-
-            },
-
-
-            delete(id) {
-
-                return ipcRenderer.invoke(
-                    "deployment:delete",
-                    id
-                );
-
-            }
-
-
+        (event, progress) => {
+          callback(progress);
         },
-
-
-
-        execution: {
-
-
-            start(data) {
-
-                return ipcRenderer.invoke(
-                    "execution:start",
-                    data
-                );
-
-            }
-
-
-        },
-
-
-
-        powershell: {
-
-
-            execute(script) {
-
-                return ipcRenderer.invoke(
-                    "powershell:execute",
-                    script
-                );
-
-            }
-
-
-        }
-
-
-    }
-);
+      );
+    },
+  },
+});
