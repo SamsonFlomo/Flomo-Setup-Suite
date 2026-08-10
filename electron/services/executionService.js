@@ -1,78 +1,42 @@
-import powershellService from "./powershellService.js";
-
-
-
 class ExecutionService {
-
-
-
-    async execute(script){
-
-
-        if(!script){
-
-
-            return {
-
-
-                success:false,
-
-                output:"",
-
-                errors:"Empty PowerShell script"
-
-
-            };
-
-
-        }
-
-
-
-
-
-        try {
-
-
-            const result =
-
-                await powershellService.execute(
-                    script
-                );
-
-
-
-            return result;
-
-
-
-        } catch(error){
-
-
-
-            return {
-
-
-                success:false,
-
-                output:"",
-
-                errors:error.message
-
-
-            };
-
-
-        }
-
-
-
+  async start(data) {
+    if (!window.fss?.execution) {
+      return {
+        success: false,
+        errors: "Electron unavailable",
+      };
     }
 
+    return window.fss.execution.start(data);
+  }
 
+  subscribeProgress(callback) {
+    if (!window.fss?.execution) {
+      return () => {};
+    }
 
+    return window.fss.execution.onProgress(callback);
+  }
+
+  subscribeState(callback) {
+    if (!window.fss?.execution) {
+      return () => {};
+    }
+
+    return window.fss.execution.onState(callback);
+  }
+
+  pause() {
+    return window.fss.execution.pause();
+  }
+
+  resume() {
+    return window.fss.execution.resume();
+  }
+
+  cancel() {
+    return window.fss.execution.cancel();
+  }
 }
-
-
 
 export default new ExecutionService();

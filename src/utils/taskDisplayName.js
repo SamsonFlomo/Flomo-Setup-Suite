@@ -1,36 +1,54 @@
-const labels = {
+function taskDisplayName(task){
 
-    rename_computer:
-        "Rename Computer",
 
-    create_user:
-        "Create User",
+    switch(task.type){
 
-    create_admin:
-        "Create Administrator",
 
-    install_software:
-        "Install Software",
+        case "rename_computer":
 
-    install_printer:
-        "Install Printer",
+            return "Rename Computer";
 
-    configure_network:
-        "Configure Network",
 
-    join_domain:
-        "Join Domain",
 
-    windows_update:
-        "Windows Update",
+        case "create_user":
 
-    generate_report:
-        "Generate Report"
+            return "Create User";
 
-};
 
-export default function taskDisplayName(type){
 
-    return labels[type] || type;
+        case "install_software":
+
+            return `Install ${task.data.software}`;
+
+
+
+        case "install_printer":
+
+            return `Install Printer`;
+
+
+
+        case "join_domain":
+
+            return "Join Domain";
+
+
+
+        case "generate_report":
+
+            return "Generate Report";
+
+
+
+        default:
+
+            return task.type;
+
+
+    }
+
 
 }
+
+
+export default taskDisplayName;

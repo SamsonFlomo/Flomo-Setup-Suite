@@ -1,11 +1,72 @@
 import { spawn } from "child_process";
 
+import {
+    isRealMode,
+    getExecutionMode
+} from "../../backend/config/ExecutionMode.js";
+
 
 class PowerShellService {
 
 
     execute(script, onProgress = null) {
 
+
+        const mode =
+            getExecutionMode();
+
+
+        /*
+         * SIMULATION MODE
+         *
+         * Never start PowerShell.
+         */
+
+        if (!isRealMode()) {
+
+
+            if (onProgress) {
+
+                onProgress({
+
+                    type: "system",
+
+                    message:
+                        "Simulation mode: PowerShell execution skipped",
+
+                    status:
+                        "success"
+
+                });
+
+            }
+
+
+            return Promise.resolve({
+
+                success: true,
+
+                simulated: true,
+
+                mode,
+
+                exitCode: 0,
+
+                output:
+                    script || "",
+
+                errors: ""
+
+            });
+
+        }
+
+
+        /*
+         * REAL MODE
+         *
+         * Actually execute PowerShell.
+         */
 
         return new Promise((resolve) => {
 
@@ -17,50 +78,41 @@ class PowerShellService {
                     type: "system",
 
                     message:
-                    "PowerShell execution started",
+                        "Real PowerShell execution started",
 
                     status:
-                    "running"
+                        "running"
 
                 });
 
             }
 
 
+            const process =
+                spawn(
 
+                    "powershell.exe",
 
+                    [
 
-            const process = spawn(
+                        "-NoProfile",
 
-                "powershell.exe",
+                        "-ExecutionPolicy",
 
-                [
+                        "Bypass",
 
-                    "-NoProfile",
+                        "-Command",
 
-                    "-ExecutionPolicy",
+                        "-"
 
-                    "Bypass",
+                    ]
 
-                    "-Command",
-
-                    "-"
-
-                ]
-
-            );
-
-
-
+                );
 
 
             let stdout = "";
 
             let stderr = "";
-
-
-
-
 
 
             process.stdout.on(
@@ -69,7 +121,6 @@ class PowerShellService {
 
                 (data) => {
 
-
                     const output =
                         data.toString();
 
@@ -77,38 +128,25 @@ class PowerShellService {
                     stdout += output;
 
 
-
-                    if(onProgress){
-
+                    if (onProgress) {
 
                         onProgress({
 
-                            type:
-                            "output",
-
+                            type: "output",
 
                             message:
-                            output.trim(),
-
+                                output.trim(),
 
                             status:
-                            "running"
+                                "running"
 
                         });
 
-
                     }
-
-
 
                 }
 
             );
-
-
-
-
-
 
 
             process.stderr.on(
@@ -117,7 +155,6 @@ class PowerShellService {
 
                 (data) => {
 
-
                     const error =
                         data.toString();
 
@@ -125,39 +162,25 @@ class PowerShellService {
                     stderr += error;
 
 
-
-                    if(onProgress){
-
+                    if (onProgress) {
 
                         onProgress({
 
-                            type:
-                            "error",
-
+                            type: "error",
 
                             message:
-                            error.trim(),
-
+                                error.trim(),
 
                             status:
-                            "running"
+                                "running"
 
                         });
 
-
                     }
-
 
                 }
 
             );
-
-
-
-
-
-
-
 
 
             process.on(
@@ -167,84 +190,60 @@ class PowerShellService {
                 (code) => {
 
 
-
-                    if(onProgress){
-
+                    if (onProgress) {
 
                         onProgress({
 
-                            type:
-                            "system",
-
+                            type: "system",
 
                             message:
-                            "PowerShell execution completed",
-
+                                "Real PowerShell execution completed",
 
                             status:
-                            code === 0
-                            ?
-                            "success"
-                            :
-                            "failed"
+                                code === 0
+                                    ? "success"
+                                    : "failed"
 
                         });
-
 
                     }
 
 
-
-
-
                     resolve({
 
-
                         success:
-                        code === 0,
+                            code === 0,
 
+                        simulated:
+                            false,
+
+                        mode,
 
                         exitCode:
-                        code,
-
+                            code,
 
                         output:
-                        stdout,
-
+                            stdout,
 
                         errors:
-                        stderr
-
+                            stderr
 
                     });
-
-
 
                 }
 
             );
 
 
-
-
-
-
-
-
             process.stdin.write(
                 script
             );
 
-
             process.stdin.end();
-
-
 
         });
 
-
     }
-
 
 }
 

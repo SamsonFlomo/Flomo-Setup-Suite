@@ -8,10 +8,10 @@ import { SetupContext } from "../../context/SetupContext";
 import { OrganizationContext } from "../../context/OrganizationContext";
 
 import deploymentPipeline from "../../services/deploymentPipeline";
-
 import executionService from "../../services/executionService";
 
 import createExecutionPlan from "../../../backend/planner/ExecutionPlanner.js";
+import taskDisplayName from "../../utils/taskDisplayName";
 
 function Execution() {
   const navigate = useNavigate();
@@ -22,6 +22,12 @@ function Execution() {
 
   const { organizations } = useContext(OrganizationContext);
 
+  const [steps, setSteps] = useState([]);
+
+  const [executionState, setExecutionState] = useState("idle");
+
+  const [failedTask, setFailedTask] = useState(null);
+
   const selectedOrganization = organizations.find(
     (org) => org.id === Number(setupData.computer.organization),
   );
@@ -30,121 +36,115 @@ function Execution() {
     (dept) => dept.id === Number(setupData.computer.department),
   );
 
-  const [steps, setSteps] = useState([]);
+  useEffect(() => {
+    const plannedTasks = createExecutionPlan(setupData);
 
-  const updateProgress = (progress) => {
-    if (progress.type !== "task") {
-      return;
-    }
+    setSteps(
+      plannedTasks.map((task) => ({
+        id: task.id,
 
-    setSteps((previous) =>
-      previous.map((step) => {
-        if (step.id === progress.taskId) {
-          return {
-            ...step,
+        name: taskDisplayName(task),
 
-            status: progress.status,
-          };
+        status: "pending",
+      })),
+    );
+
+    const removeProgressListener = executionService.subscribeProgress(
+      (progress) => {
+        if (progress.type !== "task") {
+          return;
         }
 
-        return step;
-      }),
-    );
-  };
+        setSteps((previous) =>
+          previous.map((step) =>
+            step.id === progress.taskId
+              ? {
+                  ...step,
 
-  useEffect(() => {
-    const cleanup = executionService.subscribeProgress(updateProgress);
-
-    return () => {
-      cleanup();
-    };
-
-    async function executeDeployment() {
-      try {
-        const plannedTasks = createExecutionPlan(setupData);
-
-        setSteps(
-          plannedTasks.map((task) => ({
-            id: task.id,
-
-            name: task.name,
-
-            status: "pending",
-          })),
+                  status: progress.status,
+                }
+              : step,
+          ),
         );
 
+        if (progress.status === "failed") {
+          setFailedTask(progress.taskId);
+        }
+      },
+    );
+
+    const removeStateListener = executionService.subscribeState((state) => {
+      setExecutionState(state.state);
+    });
+
+    async function runDeployment() {
+      try {
         const deploymentResult = await deploymentPipeline.deploy(setupData);
 
-        setSteps(
-          deploymentResult.tasks.map((task) => ({
-            id: task.id,
+        if (deploymentResult.success) {
+          addDeployment({
+            id: Date.now(),
 
-            name: task.name,
+            computer: {
+              name: setupData.computer.name,
 
-            status: "pending",
-          })),
-        );
+              organization: {
+                id: selectedOrganization?.id,
 
-        addDeployment({
-          id: Date.now(),
+                name: selectedOrganization?.name,
 
-          computer: {
-            name: setupData.computer.name,
+                code: selectedOrganization?.code,
+              },
 
-            organization: {
-              id: selectedOrganization?.id,
+              department: {
+                id: selectedDepartment?.id,
 
-              name: selectedOrganization?.name,
+                name: selectedDepartment?.name,
+              },
 
-              code: selectedOrganization?.code,
+              type: setupData.computer.type,
+
+              number: setupData.computer.number,
+
+              domain: setupData.computer.domain,
+
+              ipAddress: setupData.computer.ipAddress,
+
+              workgroup: setupData.computer.workgroup,
             },
 
-            department: {
-              id: selectedDepartment?.id,
+            profile: setupData.profile?.title,
 
-              name: selectedDepartment?.name,
-            },
+            users: setupData.accounts.users,
 
-            type: setupData.computer.type,
+            administrators: setupData.accounts.administrators,
 
-            number: setupData.computer.number,
+            software: setupData.software,
 
-            domain: setupData.computer.domain,
+            printers: setupData.printers,
 
-            ipAddress: setupData.computer.ipAddress,
+            options: setupData.options,
 
-            workgroup: setupData.computer.workgroup,
-          },
+            execution: deploymentResult,
 
-          profile: setupData.profile?.title,
+            status: "Successful",
 
-          users: setupData.accounts.users,
+            date: new Date().toISOString(),
+          });
 
-          administrators: setupData.accounts.administrators,
-
-          software: setupData.software,
-
-          printers: setupData.printers,
-
-          options: setupData.options,
-
-          execution: deploymentResult,
-
-          status: deploymentResult.result.success ? "Successful" : "Failed",
-
-          date: new Date().toISOString(),
-        });
-
-        navigate(ROUTES.COMPLETION);
+          navigate(ROUTES.COMPLETION);
+        }
       } catch (error) {
         console.error(error);
       }
     }
 
-    executeDeployment();
+    runDeployment();
 
     return () => {
-      executionProgressService.unsubscribe(updateProgress);
+      removeProgressListener();
+
+      removeStateListener();
     };
   }, []);
 
@@ -152,7 +152,38 @@ function Execution() {
     <section>
       <h1>Deployment Execution</h1>
 
-      <p>Flomo Setup Suite is applying configuration.</p>
+      <p>Current State: {executionState}</p>
+
+      <button
+        onClick={() => executionService.pause()}
+        disabled={executionState !== "running"}
+      >
+        Pause
+      </button>
+
+      <button
+        onClick={() => executionService.resume()}
+        disabled={executionState !== "paused"}
+      >
+        Resume
+      </button>
+
+      <button
+        onClick={() => executionService.cancel()}
+        disabled={executionState === "completed"}
+      >
+        Cancel
+      </button>
+
+      <button onClick={() => executionService.retry()} disabled={!failedTask}>
+        Retry Failed Task
+      </button>
+
+      <button onClick={() => executionService.skip()} disabled={!failedTask}>
+        Skip Failed Task
+      </button>
+
+      <hr />
 
       {steps.map((step) => (
         <div key={step.id}>

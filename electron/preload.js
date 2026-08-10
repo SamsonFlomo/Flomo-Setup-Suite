@@ -24,6 +24,18 @@ contextBridge.exposeInMainWorld("fss", {
   },
 
   execution: {
+    onState(callback) {
+      const listener = (event, state) => {
+        callback(state);
+      };
+
+      ipcRenderer.on("execution:state", listener);
+
+      return () => {
+        ipcRenderer.removeListener("execution:state", listener);
+      };
+    },
+
     start(data) {
       return ipcRenderer.invoke("execution:start", data);
     },
@@ -38,6 +50,26 @@ contextBridge.exposeInMainWorld("fss", {
       return () => {
         ipcRenderer.removeListener("execution:progress", listener);
       };
+    },
+
+    pause() {
+      return ipcRenderer.invoke("execution:pause");
+    },
+
+    resume() {
+      return ipcRenderer.invoke("execution:resume");
+    },
+
+    cancel() {
+      return ipcRenderer.invoke("execution:cancel");
+    },
+
+    retry() {
+      return ipcRenderer.invoke("execution:retry");
+    },
+
+    skip() {
+      return ipcRenderer.invoke("execution:skip");
     },
   },
 

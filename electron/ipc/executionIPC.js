@@ -1,74 +1,170 @@
 import { ipcMain } from "electron";
 
-import powershellService from "../services/powershellService.js";
-import { generateTaskScript } from "../../backend/powershell/ScriptGenerator.js";
+import executionController from "../services/ExecutionController.js";
+
 
 function registerExecutionIPC() {
-  ipcMain.handle("execution:start", async (event, data) => {
-    const { tasks } = data;
 
-    if (!tasks || tasks.length === 0) {
+
+  ipcMain.handle(
+    "execution:start",
+
+    async (event, data) => {
+
+
+      const {
+        tasks
+      } = data;
+
+
+
+      if (!tasks || tasks.length === 0) {
+
+
+        return {
+
+          success:false,
+
+          errors:"No tasks received"
+
+        };
+
+
+      }
+
+
+
+      return executionController.execute(
+
+        tasks,
+
+        event.sender
+
+      );
+
+
+    }
+
+  );
+
+
+
+
+
+
+  ipcMain.handle(
+    "execution:pause",
+
+    () => {
+
+
+      executionController.pause();
+
+
       return {
-        success: false,
 
-        output: "",
+        success:true
 
-        errors: "No tasks received",
       };
+
+
     }
 
-    const results = [];
+  );
 
-    for (const task of tasks) {
-      event.sender.send(
-        "execution:progress",
 
-        {
-          type: "task",
 
-          taskId: task.id,
 
-          name: task.name,
 
-          status: "running",
-        },
-      );
 
-      const script = generateTaskScript(task);
 
-      const result = await powershellService.execute(script);
+  ipcMain.handle(
+    "execution:resume",
 
-      results.push({
-        task,
+    () => {
 
-        result,
-      });
 
-      event.sender.send(
-        "execution:progress",
+      executionController.resume();
 
-        {
-          type: "task",
 
-          taskId: task.id,
+      return {
 
-          name: task.name,
+        success:true
 
-          status: result.success ? "success" : "failed",
+      };
 
-          output: result.output,
 
-          error: result.errors,
-        },
-      );
     }
 
-    return {
-      success: results.every((item) => item.result.success),
+  );
 
-      results,
-    };
-  });
+
+
+
+
+
+
+  ipcMain.handle(
+    "execution:cancel",
+
+    () => {
+
+
+      executionController.cancel();
+
+
+      return {
+
+        success:true
+
+      };
+
+
+    }
+
+  );
+
+
+
+
+
+
+
+  ipcMain.handle(
+    "execution:retry",
+
+    async () => {
+
+
+      return executionController.retry();
+
+
+    }
+
+  );
+
+
+
+
+
+
+
+  ipcMain.handle(
+    "execution:skip",
+
+    async () => {
+
+
+      return executionController.skip();
+
+
+    }
+
+  );
+
+
 }
+
+
 
 export default registerExecutionIPC;

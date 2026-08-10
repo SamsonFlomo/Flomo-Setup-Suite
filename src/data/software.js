@@ -1,7 +1,7 @@
 const software = [
     {
         id: "office",
-        name: "Microsoft Office",
+        name: "Microsoft Office 365",
         category: "Productivity",
         defaultProfiles: [
             "company-local",

@@ -1,26 +1,44 @@
-class Organization {
+class Software {
 
-    constructor(
+    constructor({
+
         id,
+
         name,
-        code,
-        domain,
-        description
-    ){
+
+        category,
+
+        source,
+
+        installer,
+
+        verify
+
+    }){
+
 
         this.id = id;
 
+
         this.name = name;
 
-        this.code = code;
 
-        this.domain = domain;
+        this.category = category;
 
-        this.description = description;
+
+        this.source = source;
+
+
+        this.installer = installer;
+
+
+        this.verify = verify;
+
 
     }
+
 
 }
 
 
-export default Organization;
+export default Software;

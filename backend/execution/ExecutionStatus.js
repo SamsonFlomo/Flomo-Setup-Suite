@@ -6,7 +6,13 @@ const ExecutionStatus = {
 
     SUCCESS: "success",
 
-    FAILED: "failed"
+    FAILED: "failed",
+
+    PAUSED: "paused",
+
+    CANCELLED: "cancelled",
+
+    SKIPPED: "skipped"
 
 };
 
