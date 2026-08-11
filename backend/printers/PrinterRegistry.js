@@ -1,84 +1,73 @@
 import Printer from "../models/Printer.js";
 
+
 class PrinterRegistry {
 
-    constructor(){
+
+    constructor() {
 
         this.printers = [
 
             new Printer({
 
-                id: "hp-laser",
+                id:
+                    "canon-office",
 
-                name: "HP LaserJet",
+                name:
+                    "Canon Office Printer",
 
-                manufacturer: "HP",
+                model:
+                    "Canon IR2520",
 
-                connection: "network",
+                type:
+                    "local",
 
-                driver: {
-
-                    type: "online",
-
-                    url: "https://support.hp.com"
-
-                },
-
-                verify: {
-
-                    name: "HP LaserJet"
-
-                }
+                departments: [
+                    "administration",
+                    "finance"
+                ]
 
             }),
 
+
             new Printer({
 
-                id: "canon-office",
+                id:
+                    "hp-laser",
 
-                name: "Canon Office Printer",
+                name:
+                    "HP Laser Printer",
 
-                manufacturer: "Canon",
+                model:
+                    "HP LaserJet",
 
-                connection: "network",
+                type:
+                    "local",
 
-                driver: {
-
-                    type: "online",
-
-                    url: "https://www.canon.com"
-
-                },
-
-                verify: {
-
-                    name: "Canon Office Printer"
-
-                }
+                departments: [
+                    "general"
+                ]
 
             }),
 
+
             new Printer({
 
-                id: "network-printer",
+                id:
+                    "network-printer",
 
-                name: "Generic Network Printer",
+                name:
+                    "Network Printer",
 
-                manufacturer: "Generic",
+                model:
+                    "Generic Network Printer",
 
-                connection: "network",
+                type:
+                    "network",
 
-                driver: {
-
-                    type: "windows"
-
-                },
-
-                verify: {
-
-                    name: "Generic Network Printer"
-
-                }
+                departments: [
+                    "all"
+                ]
 
             })
 
@@ -86,22 +75,26 @@ class PrinterRegistry {
 
     }
 
-    getAll(){
+
+    getAll() {
 
         return this.printers;
 
     }
 
-    getById(id){
+
+    getById(id) {
 
         return this.printers.find(
 
-            printer => printer.id === id
+            printer =>
+                printer.id === id
 
         );
 
     }
 
 }
+
 
 export default new PrinterRegistry();

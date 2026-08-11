@@ -1,26 +1,35 @@
-class Organization {
-
-    constructor(
+class Printer {
+    constructor({
         id,
         name,
-        code,
-        domain,
-        description
-    ){
+        model,
+        type = "network",
+        ipAddress = null,
+        address = null,
+        host = null,
+        driver = null,
+        departments = []
+    }) {
 
         this.id = id;
 
         this.name = name;
 
-        this.code = code;
+        this.model = model;
 
-        this.domain = domain;
+        this.type = type;
 
-        this.description = description;
+        this.ipAddress = ipAddress;
+
+        this.address = address;
+
+        this.host = host;
+
+        this.driver = driver;
+
+        this.departments = departments;
 
     }
-
 }
 
-
-export default Organization;
+export default Printer;

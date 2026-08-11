@@ -1,10 +1,10 @@
+import AutomationTask from "../AutomationTask.js";
+
 import PrinterInstaller
     from "../../printers/PrinterInstaller.js";
 
-import {
-    installNetworkPrinter,
-    verifyPrinter
-} from "../../powershell/printers/PrinterCommands.js";
+import WindowsPrinterInstaller
+    from "../../printers/WindowsPrinterInstaller.js";
 
 import {
     isRealMode
@@ -14,22 +14,38 @@ import {
 class InstallPrinter {
 
 
-    static async create(data) {
+    create(data) {
 
-        return {
+        return new AutomationTask({
 
-            type: "install_printer",
+            id:
+                "install-printer",
 
-            data
+            name:
+                "Install Printer",
 
-        };
+            type:
+                "INSTALL_PRINTER",
+
+            data,
+
+            execute:
+                async () => {
+
+                    return InstallPrinter.execute(
+                        data
+                    );
+
+                }
+
+        });
 
     }
 
 
     static async execute(data) {
 
-        const printer =
+        let printer =
             data?.printer ||
             data;
 
@@ -49,12 +65,41 @@ class InstallPrinter {
 
 
         /*
-         * DEVELOPMENT / SIMULATION MODE
+         * Some setup selections contain only
+         * the printer ID.
          *
-         * Do not modify Windows.
+         * Normalize that value before
+         * passing it to the installer.
          */
 
-        if (!isRealMode()) {
+        if (
+            typeof printer === "string"
+        ) {
+
+            printer = {
+
+                id:
+                    printer,
+
+                name:
+                    printer
+
+            };
+
+        }
+
+
+        /*
+         * SIMULATION MODE
+         *
+         * This remains the default.
+         *
+         * No Windows changes are made.
+         */
+
+        if (
+            !isRealMode()
+        ) {
 
             return PrinterInstaller.install(
                 printer
@@ -64,53 +109,21 @@ class InstallPrinter {
 
 
         /*
-         * REAL MODE
+         * REAL WINDOWS MODE
          *
-         * Generate the PowerShell command.
+         * Use the Windows-specific installer.
          */
 
-        if (
-            printer.type === "network"
-        ) {
-
-            const script =
-                installNetworkPrinter(
-                    printer
-                );
-
-
-            return {
-
-                success: true,
-
-                realMode: true,
-
-                printer,
-
-                script
-
-            };
-
-        }
-
-
-        return {
-
-            success: false,
-
-            errors:
-                `Unsupported printer type: ${
-                    printer.type || "unknown"
-                }`
-
-        };
+        return WindowsPrinterInstaller.install(
+            printer
+        );
 
     }
 
 
-    static async verify(data) {
+    async verify(data) {
 
-        const printer =
+        let printer =
             data?.printer ||
             data;
 
@@ -129,13 +142,40 @@ class InstallPrinter {
         }
 
 
-        if (!isRealMode()) {
+        if (
+            typeof printer === "string"
+        ) {
+
+            printer = {
+
+                id:
+                    printer,
+
+                name:
+                    printer
+
+            };
+
+        }
+
+
+        /*
+         * Simulation verification.
+         */
+
+        if (
+            !isRealMode()
+        ) {
 
             return {
 
                 success: true,
 
                 simulated: true,
+
+                printer:
+                    printer.name ||
+                    printer.id,
 
                 message:
                     `Printer verification simulated for ${
@@ -148,22 +188,17 @@ class InstallPrinter {
         }
 
 
-        return {
+        /*
+         * Real Windows verification.
+         */
 
-            success: true,
-
-            realMode: true,
-
-            script:
-                verifyPrinter(
-                    printer
-                )
-
-        };
+        return WindowsPrinterInstaller.verify(
+            printer
+        );
 
     }
 
 }
 
 
-export default InstallPrinter;
+export default new InstallPrinter();

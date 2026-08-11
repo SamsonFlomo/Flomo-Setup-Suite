@@ -1,177 +1,202 @@
-import { spawn } from "child_process";
-
-
 class PrinterInstaller {
 
 
-    async install(printer) {
+  async install(printer) {
 
+    if (!printer) {
 
-        if (!printer) {
+      return {
 
-            return {
+        success: false,
 
-                success: false,
+        errors:
+          "Printer information is missing",
 
-                errors: "Printer information is missing"
-
-            };
-
-        }
-
-
-        const printerName =
-            printer.name ||
-            printer.id ||
-            "Unknown Printer";
-
-
-        const printerType =
-            printer.type ||
-            "network";
-
-
-        console.log(
-            `Installing printer: ${printerName}`
-        );
-
-
-        /*
-         * LOCAL PRINTER
-         */
-
-        if (printerType === "local") {
-
-            return this.installLocal(
-                printer
-            );
-
-        }
-
-
-        /*
-         * NETWORK PRINTER
-         */
-
-        if (printerType === "network") {
-
-            return this.installNetwork(
-                printer
-            );
-
-        }
-
-
-        return {
-
-            success: false,
-
-            errors:
-                `Unsupported printer type: ${printerType}`
-
-        };
+      };
 
     }
 
 
-    async installLocal(printer) {
+    /*
+     * Some setup selections currently contain
+     * only the printer ID, for example:
+     *
+     * "hp-laser"
+     *
+     * Normalize that value into a basic
+     * printer object.
+     */
 
+    if (
+      typeof printer === "string"
+    ) {
 
-        const printerName =
-            printer.name ||
-            printer.id;
+      printer = {
 
+        id:
+          printer,
 
-        const driver =
-            printer.driver;
+        name:
+          printer,
 
-
-        if (!driver) {
-
-            return {
-
-                success: false,
-
-                errors:
-                    `No driver configured for ${printerName}`
-
-            };
-
-        }
-
-
-        return {
-
-            success: true,
-
-            simulated: true,
-
-            printer:
-                printerName,
-
-            message:
-                `Local printer installation prepared for ${printerName}`
-
-        };
+      };
 
     }
 
 
-    async installNetwork(printer) {
+    const printerName =
+      printer.name ||
+      printer.id ||
+      "Unknown Printer";
 
 
-        const printerName =
-            printer.name ||
-            printer.id;
+    const printerType =
+      printer.type ||
+      "network";
 
 
-        const address =
-            printer.ipAddress ||
-            printer.address ||
-            printer.host;
+    console.log(
+      `Installing printer: ${printerName}`
+    );
 
 
-        if (!address) {
+    /*
+     * LOCAL PRINTER
+     */
 
-            return {
+    if (
+      printerType === "local"
+    ) {
 
-                success: false,
-
-                errors:
-                    `No network address configured for ${printerName}`
-
-            };
-
-        }
-
-
-        /*
-         * For now we prepare the network
-         * printer installation.
-         *
-         * Actual Windows printer creation
-         * will be enabled through the real
-         * execution mode later.
-         */
-
-
-        return {
-
-            success: true,
-
-            simulated: true,
-
-            printer:
-                printerName,
-
-            address,
-
-            message:
-                `Network printer ${printerName} is ready for installation at ${address}`
-
-        };
+      return this.installLocal(
+        printer
+      );
 
     }
+
+
+    /*
+     * NETWORK PRINTER
+     */
+
+    if (
+      printerType === "network"
+    ) {
+
+      return this.installNetwork(
+        printer
+      );
+
+    }
+
+
+    return {
+
+      success: false,
+
+      errors:
+        `Unsupported printer type: ${printerType}`,
+
+    };
+
+  }
+
+
+  async installLocal(printer) {
+
+    const printerName =
+      printer.name ||
+      printer.id;
+
+
+    const driver =
+      printer.driver;
+
+
+    /*
+     * Simulation currently only prepares
+     * the installation.
+     *
+     * Driver installation will be handled
+     * when real printer deployment is enabled.
+     */
+
+    return {
+
+      success: true,
+
+      simulated: true,
+
+      printer:
+        printerName,
+
+      driver:
+        driver || null,
+
+      message:
+        `Local printer installation prepared for ${printerName}`,
+
+    };
+
+  }
+
+
+  async installNetwork(printer) {
+
+    const printerName =
+      printer.name ||
+      printer.id;
+
+
+    const address =
+      printer.ipAddress ||
+      printer.address ||
+      printer.host;
+
+
+    /*
+     * In simulation mode we don't need an actual
+     * network address yet. We are testing the
+     * execution pipeline, not Windows printer
+     * configuration.
+     */
+
+    if (!address) {
+
+      return {
+
+        success: true,
+
+        simulated: true,
+
+        printer:
+          printerName,
+
+        message:
+          `Network printer ${printerName} selected. Network address configuration will be required for real installation.`,
+
+      };
+
+    }
+
+
+    return {
+
+      success: true,
+
+      simulated: true,
+
+      printer:
+        printerName,
+
+      address,
+
+      message:
+        `Network printer ${printerName} is ready for installation at ${address}`,
+
+    };
+
+  }
 
 }
 
