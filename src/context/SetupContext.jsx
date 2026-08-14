@@ -2,238 +2,100 @@ import { createContext, useState, useEffect } from "react";
 
 import storageService from "../services/storageService";
 
-
 export const SetupContext = createContext();
 
-
-
 const defaultSetupData = {
+  profile: null,
 
-    profile: null,
+  accounts: {
+    administrators: [],
 
+    users: [],
+  },
 
-    accounts: {
+  computer: {
+    organization: "",
+    department: "",
+    type: "PC",
+    number: "",
+    name: "",
+    domain: "",
+    ipAddress: "",
+    subnetMask: "",
+    gateway: "",
+    dns: "",
+    workgroup: "",
+  },
 
-        administrators: [],
+  software: [],
 
-        users: []
+  printers: [],
 
-    },
+  options: {
+    windowsUpdate: false,
 
+    restart: false,
 
-    computer: {
-
-        organization: "",
-
-        department: "",
-
-        type: "PC",
-
-        number: "",
-
-        name: "",
-
-        domain: "",
-
-        ipAddress: "",
-
-        workgroup: ""
-
-    },
-
-
-    software: [],
-
-    printers: [],
-
-
-    options: {
-
-        windowsUpdate: false,
-
-        restart: false,
-
-        generateReport: true
-
-    }
-
+    generateReport: true,
+  },
 };
 
-
-
-
-
 export function SetupProvider({ children }) {
-
-
-
-    const [setupData, setSetupData] = useState(
-
-        storageService.loadSetupData(defaultSetupData)
-
-    );
-
-
-
-
-
-    useEffect(() => {
-
-
-        storageService.saveSetupData(
-
-            setupData
-
-        );
-
-
-    }, [setupData]);
-
-
-
-
-
-
-
-    function applyProfile(profile) {
-
-
-        if (!profile) {
-
-            return;
-
-        }
-
-
-
-        setSetupData((previousData) => ({
-
-
-            ...previousData,
-
-
-            profile: profile,
-
-
-
-            computer: {
-
-
-                ...previousData.computer,
-
-
-                domain:
-
-                    profile.settings.domainJoin
-
-                    ? "enabled"
-
-                    : "",
-
-
-
-                workgroup:
-
-                    !profile.settings.domainJoin
-
-                    ? "WORKGROUP"
-
-                    : ""
-
-            },
-
-
-
-            software:
-
-
-                profile.settings.installOffice
-
-                ?
-
-                [
-
-                    "Microsoft Office"
-
-                ]
-
-                :
-
-                [],
-
-
-
-            accounts: {
-
-
-                ...previousData.accounts,
-
-
-
-                users:
-
-
-                    profile.settings.createStandardUser
-
-                    ?
-
-
-                    [
-
-                        {
-
-                            id: Date.now(),
-
-                            name: "Standard User"
-
-                        }
-
-                    ]
-
-                    :
-
-
-                    []
-
-            }
-
-
-
-        }));
-
+  const [setupData, setSetupData] = useState(
+    storageService.loadSetupData(defaultSetupData),
+  );
+
+  useEffect(() => {
+    storageService.saveSetupData(setupData);
+  }, [setupData]);
+
+  function applyProfile(profile) {
+    if (!profile) {
+      return;
     }
 
+    setSetupData((previousData) => ({
+      ...previousData,
 
+      profile: profile,
 
+      computer: {
+        ...previousData.computer,
 
+        domain: profile.settings.domainJoin ? "enabled" : "",
 
+        workgroup: !profile.settings.domainJoin ? "WORKGROUP" : "",
+      },
 
-    return (
+      software: profile.settings.installOffice ? ["Microsoft Office"] : [],
 
+      accounts: {
+        ...previousData.accounts,
 
-        <SetupContext.Provider
+        users: profile.settings.createStandardUser
+          ? [
+              {
+                id: Date.now(),
 
+                name: "Standard User",
+              },
+            ]
+          : [],
+      },
+    }));
+  }
 
-            value={{
+  return (
+    <SetupContext.Provider
+      value={{
+        setupData,
 
-                setupData,
+        setSetupData,
 
-                setSetupData,
-
-                applyProfile
-
-            }}
-
-
-        >
-
-
-            {children}
-
-
-        </SetupContext.Provider>
-
-
-    );
-
+        applyProfile,
+      }}
+    >
+      {children}
+    </SetupContext.Provider>
+  );
 }

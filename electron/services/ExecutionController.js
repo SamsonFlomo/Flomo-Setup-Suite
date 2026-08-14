@@ -5,6 +5,8 @@ import ExecutionState from "./ExecutionState.js";
 import ExecutionEnvironment from "../../backend/execution/ExecutionEnvironment.js";
 import SimulationRunner from "../../backend/execution/SimulationRunner.js";
 
+import powershellService from "./powershellService.js";
+
 class ExecutionController {
   constructor() {
     this.state = ExecutionState.IDLE;
@@ -108,149 +110,103 @@ class ExecutionController {
     };
   }
 
- async runTask(task) {
+  async runTask(task) {
+    this.sender.send("execution:progress", {
+      type: "task",
 
-    this.sender.send(
-        "execution:progress",
-        {
-            type: "task",
+      taskId: task.id,
 
-            taskId:
-                task.id,
+      name: task.name,
 
-            name:
-                task.name,
-
-            status:
-                "running",
-        },
-    );
-
+      status: "running",
+    });
 
     try {
+      const automationTask = AutomationManager.createTask(task.type, task.data);
 
-        const automationTask =
-            AutomationManager.createTask(
-                task.type,
-                task.data
-            );
-
-
-        if (
-            !automationTask ||
-            typeof automationTask.execute !== "function"
-        ) {
-
-            const result = {
-
-                success: false,
-
-                errors:
-                    `Automation task for ${task.type} `
-                    + `is not executable`
-
-            };
-
-
-            this.sender.send(
-                "execution:progress",
-                {
-                    type: "task",
-
-                    taskId:
-                        task.id,
-
-                    name:
-                        task.name,
-
-                    status:
-                        "failed",
-
-                    error:
-                        result.errors
-                }
-            );
-
-
-            return result;
-
-        }
-
-
-        const result =
-            await automationTask.execute();
-
-
-        this.sender.send(
-            "execution:progress",
-            {
-                type: "task",
-
-                taskId:
-                    task.id,
-
-                name:
-                    task.name,
-
-                status:
-                    result.success
-                        ? "success"
-                        : "failed",
-
-                output:
-                    result.output ||
-                    result.message ||
-                    "",
-
-                error:
-                    result.errors ||
-                    result.error ||
-                    ""
-            }
-        );
-
-
-        return result;
-
-
-    } catch (error) {
-
-
+      if (!automationTask || typeof automationTask.execute !== "function") {
         const result = {
+          success: false,
 
-            success: false,
-
-            errors:
-                error.message
-
+          errors: `Automation task for ${task.type} ` + `is not executable`,
         };
 
+        this.sender.send("execution:progress", {
+          type: "task",
 
-        this.sender.send(
-            "execution:progress",
-            {
-                type: "task",
+          taskId: task.id,
 
-                taskId:
-                    task.id,
+          name: task.name,
 
-                name:
-                    task.name,
+          status: "failed",
 
-                status:
-                    "failed",
-
-                error:
-                    error.message
-            }
-        );
-
+          error: result.errors,
+        });
 
         return result;
+      }
 
+      let result = await automationTask.execute();
+
+      /*
+       * REAL POWERSHELL EXECUTION
+       *
+       * Some automation actions generate a PowerShell
+       * script instead of executing it themselves.
+       *
+       * When a script is returned, send it through the
+       * central PowerShell service.
+       */
+
+      if (result.success && result.realMode && result.script) {
+        const powerShellResult = await powershellService.execute(result.script);
+
+        result = {
+          ...result,
+
+          ...powerShellResult,
+
+          script: result.script,
+        };
+      }
+
+      this.sender.send("execution:progress", {
+        type: "task",
+
+        taskId: task.id,
+
+        name: task.name,
+
+        status: result.success ? "success" : "failed",
+
+        output: result.output || result.message || "",
+
+        error: result.errors || result.error || "",
+      });
+
+      return result;
+    } catch (error) {
+      const result = {
+        success: false,
+
+        errors: error.message,
+      };
+
+      this.sender.send("execution:progress", {
+        type: "task",
+
+        taskId: task.id,
+
+        name: task.name,
+
+        status: "failed",
+
+        error: error.message,
+      });
+
+      return result;
     }
-
-} 
+  }
 
   cancelRemainingTasks() {
     for (

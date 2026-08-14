@@ -1,21 +1,20 @@
 import TaskTypes from "./TaskTypes.js";
 
-import {
-    createTask
-}
-from "./TaskFactory.js";
+import { createTask } from "./TaskFactory.js";
 
 
-
-export default function createExecutionPlan(setupData){
-
+export default function createExecutionPlan(setupData) {
 
     const tasks = [];
 
     let id = 1;
 
 
-    if(setupData.computer.name){
+    /*
+     * RENAME COMPUTER
+     */
+
+    if (setupData.computer?.name) {
 
         tasks.push(
 
@@ -27,7 +26,7 @@ export default function createExecutionPlan(setupData){
 
                 {
                     name:
-                    setupData.computer.name
+                        setupData.computer.name
                 }
 
             )
@@ -37,7 +36,46 @@ export default function createExecutionPlan(setupData){
     }
 
 
-    setupData.accounts.users.forEach(user=>{
+    /*
+     * CONFIGURE NETWORK
+     *
+     * Create one network task when the user
+     * has supplied network configuration.
+     */
+
+    const network = {
+
+        ipAddress:
+            setupData.computer?.ipAddress || "",
+
+        subnetMask:
+            setupData.computer?.subnetMask || "",
+
+        gateway:
+            setupData.computer?.gateway || "",
+
+        dns:
+            setupData.computer?.dns || "",
+
+        workgroup:
+            setupData.computer?.workgroup || ""
+
+    };
+
+
+    if (
+
+        network.ipAddress ||
+
+        network.subnetMask ||
+
+        network.gateway ||
+
+        network.dns ||
+
+        network.workgroup
+
+    ) {
 
         tasks.push(
 
@@ -45,63 +83,107 @@ export default function createExecutionPlan(setupData){
 
                 id++,
 
-                TaskTypes.CREATE_USER,
+                TaskTypes.CONFIGURE_NETWORK,
 
-                user
-
-            )
-
-        );
-
-    });
-
-
-
-    setupData.software.forEach(software=>{
-
-        tasks.push(
-
-            createTask(
-
-                id++,
-
-                TaskTypes.INSTALL_SOFTWARE,
-
-                {
-                    software
-                }
+                network
 
             )
 
         );
 
-    });
+    }
 
 
+    /*
+     * CREATE USERS
+     */
 
-    setupData.printers.forEach(printer=>{
+    setupData.accounts?.users?.forEach(
 
-        tasks.push(
+        (user) => {
 
-            createTask(
+            tasks.push(
 
-                id++,
+                createTask(
 
-                TaskTypes.INSTALL_PRINTER,
+                    id++,
 
-                {
-                    printer
-                }
+                    TaskTypes.CREATE_USER,
 
-            )
+                    user
 
-        );
+                )
 
-    });
+            );
+
+        }
+
+    );
 
 
+    /*
+     * INSTALL SOFTWARE
+     */
 
-    if(setupData.computer.domain){
+    setupData.software?.forEach(
+
+        (software) => {
+
+            tasks.push(
+
+                createTask(
+
+                    id++,
+
+                    TaskTypes.INSTALL_SOFTWARE,
+
+                    {
+                        software
+                    }
+
+                )
+
+            );
+
+        }
+
+    );
+
+
+    /*
+     * INSTALL PRINTERS
+     */
+
+    setupData.printers?.forEach(
+
+        (printer) => {
+
+            tasks.push(
+
+                createTask(
+
+                    id++,
+
+                    TaskTypes.INSTALL_PRINTER,
+
+                    {
+                        printer
+                    }
+
+                )
+
+            );
+
+        }
+
+    );
+
+
+    /*
+     * JOIN DOMAIN
+     */
+
+    if (setupData.computer?.domain) {
 
         tasks.push(
 
@@ -113,7 +195,7 @@ export default function createExecutionPlan(setupData){
 
                 {
                     domain:
-                    setupData.computer.domain
+                        setupData.computer.domain
                 }
 
             )
@@ -123,8 +205,13 @@ export default function createExecutionPlan(setupData){
     }
 
 
+    /*
+     * GENERATE REPORT
+     */
 
-    if(setupData.options.generateReport){
+    if (
+        setupData.options?.generateReport
+    ) {
 
         tasks.push(
 

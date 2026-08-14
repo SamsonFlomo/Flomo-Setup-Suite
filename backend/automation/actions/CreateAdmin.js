@@ -1,27 +1,27 @@
 import AutomationTask from "../AutomationTask.js";
 
-import WindowsComputerInstaller
-    from "../../windows/WindowsComputerInstaller.js";
+import WindowsUserInstaller
+    from "../../users/WindowsUserInstaller.js";
 
 import {
     isRealMode
 } from "../../config/ExecutionMode.js";
 
 
-class RenameComputer {
+class CreateAdmin {
 
     create(data) {
 
         return new AutomationTask({
 
             id:
-                "rename-computer",
+                "create-admin",
 
             name:
-                "Rename Computer",
+                "Create Administrator",
 
             type:
-                "RENAME_COMPUTER",
+                "CREATE_ADMIN",
 
             data,
 
@@ -35,26 +35,26 @@ class RenameComputer {
                             success: false,
 
                             errors:
-                                "Computer information is missing"
+                                "User information is missing"
 
                         };
 
                     }
 
 
-                    const newName =
-                        data.newName ||
+                    const username =
+                        data.username ||
                         data.name;
 
 
-                    if (!newName) {
+                    if (!username) {
 
                         return {
 
                             success: false,
 
                             errors:
-                                "Computer name is required"
+                                "Username is required"
 
                         };
 
@@ -64,7 +64,6 @@ class RenameComputer {
                     /*
                      * SIMULATION MODE
                      *
-                     * This remains the default.
                      * No Windows changes are made.
                      */
 
@@ -76,11 +75,11 @@ class RenameComputer {
 
                             simulated: true,
 
-                            computer:
-                                newName,
+                            user:
+                                username,
 
                             message:
-                                `Computer rename simulated: ${newName}`
+                                `Administrator creation simulated: ${username}`
 
                         };
 
@@ -91,11 +90,11 @@ class RenameComputer {
                      * REAL WINDOWS MODE
                      */
 
-                    return WindowsComputerInstaller.install({
+                    return WindowsUserInstaller.createAdministrator({
 
                         ...data,
 
-                        newName
+                        username
 
                     });
 
@@ -108,4 +107,4 @@ class RenameComputer {
 }
 
 
-export default new RenameComputer();
+export default new CreateAdmin();
