@@ -1,12 +1,14 @@
-import { spawn } from "child_process";
-
 import {
     installNetworkPrinter,
     verifyPrinter
 } from "../powershell/printers/PrinterCommands.js";
 
+import ExecutionEngine
+    from "../execution/ExecutionEngine.js";
+
 
 class WindowsPrinterInstaller {
+
 
     async install(printer) {
 
@@ -62,129 +64,20 @@ class WindowsPrinterInstaller {
             );
 
 
-        return this.executePowerShell(
-            script,
-            printerName
-        );
-
-    }
+        const result =
+            await ExecutionEngine.execute(
+                script
+            );
 
 
-    async executePowerShell(
-        script,
-        printerName
-    ) {
+        return {
 
-        return new Promise(
-            (resolve) => {
+            ...result,
 
-                const process =
-                    spawn(
-                        "powershell.exe",
-                        [
-                            "-NoProfile",
-                            "-ExecutionPolicy",
-                            "Bypass",
-                            "-Command",
-                            "-"
-                        ],
-                        {
-                            windowsHide:
-                                true
-                        }
-                    );
+            printer:
+                printerName
 
-
-                let stdout = "";
-
-                let stderr = "";
-
-
-                process.stdout.on(
-                    "data",
-                    (data) => {
-
-                        stdout +=
-                            data.toString();
-
-                    }
-                );
-
-
-                process.stderr.on(
-                    "data",
-                    (data) => {
-
-                        stderr +=
-                            data.toString();
-
-                    }
-                );
-
-
-                process.on(
-                    "error",
-                    (error) => {
-
-                        resolve({
-
-                            success: false,
-
-                            realMode: true,
-
-                            printer:
-                                printerName,
-
-                            errors:
-                                error.message,
-
-                            output:
-                                stdout
-
-                        });
-
-                    }
-                );
-
-
-                process.on(
-                    "close",
-                    (code) => {
-
-                        resolve({
-
-                            success:
-                                code === 0,
-
-                            realMode:
-                                true,
-
-                            printer:
-                                printerName,
-
-                            exitCode:
-                                code,
-
-                            output:
-                                stdout,
-
-                            errors:
-                                stderr
-
-                        });
-
-                    }
-                );
-
-
-                process.stdin.write(
-                    script
-                );
-
-                process.stdin.end();
-
-            }
-        );
+        };
 
     }
 
@@ -217,10 +110,20 @@ class WindowsPrinterInstaller {
             );
 
 
-        return this.executePowerShell(
-            script,
-            printerName
-        );
+        const result =
+            await ExecutionEngine.execute(
+                script
+            );
+
+
+        return {
+
+            ...result,
+
+            printer:
+                printerName
+
+        };
 
     }
 

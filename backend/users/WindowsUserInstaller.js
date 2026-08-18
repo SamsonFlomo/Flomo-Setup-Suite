@@ -1,10 +1,11 @@
-import { spawn } from "child_process";
-
 import {
     createUser,
     createAdministrator,
     verifyUser
 } from "../powershell/users/UserCommands.js";
+
+import ExecutionEngine
+    from "../execution/ExecutionEngine.js";
 
 
 class WindowsUserInstaller {
@@ -55,10 +56,20 @@ class WindowsUserInstaller {
             });
 
 
-        return this.executePowerShell(
-            script,
-            username
-        );
+        const result =
+            await ExecutionEngine.execute(
+                script
+            );
+
+
+        return {
+
+            ...result,
+
+            user:
+                username
+
+        };
 
     }
 
@@ -108,10 +119,20 @@ class WindowsUserInstaller {
             });
 
 
-        return this.executePowerShell(
-            script,
-            username
-        );
+        const result =
+            await ExecutionEngine.execute(
+                script
+            );
+
+
+        return {
+
+            ...result,
+
+            user:
+                username
+
+        };
 
     }
 
@@ -161,131 +182,20 @@ class WindowsUserInstaller {
             });
 
 
-        return this.executePowerShell(
-            script,
-            username
-        );
-
-    }
+        const result =
+            await ExecutionEngine.execute(
+                script
+            );
 
 
-    async executePowerShell(
-        script,
-        username
-    ) {
+        return {
 
-        return new Promise(
-            (resolve) => {
+            ...result,
 
-                const process =
-                    spawn(
-                        "powershell.exe",
-                        [
-                            "-NoProfile",
-                            "-ExecutionPolicy",
-                            "Bypass",
-                            "-Command",
-                            "-"
-                        ],
-                        {
-                            windowsHide:
-                                true
-                        }
-                    );
+            user:
+                username
 
-
-                let stdout = "";
-
-                let stderr = "";
-
-
-                process.stdout.on(
-                    "data",
-                    (data) => {
-
-                        stdout +=
-                            data.toString();
-
-                    }
-                );
-
-
-                process.stderr.on(
-                    "data",
-                    (data) => {
-
-                        stderr +=
-                            data.toString();
-
-                    }
-                );
-
-
-                process.on(
-                    "error",
-                    (error) => {
-
-                        resolve({
-
-                            success:
-                                false,
-
-                            realMode:
-                                true,
-
-                            user:
-                                username,
-
-                            errors:
-                                error.message,
-
-                            output:
-                                stdout
-
-                        });
-
-                    }
-                );
-
-
-                process.on(
-                    "close",
-                    (code) => {
-
-                        resolve({
-
-                            success:
-                                code === 0,
-
-                            realMode:
-                                true,
-
-                            user:
-                                username,
-
-                            exitCode:
-                                code,
-
-                            output:
-                                stdout,
-
-                            errors:
-                                stderr
-
-                        });
-
-                    }
-                );
-
-
-                process.stdin.write(
-                    script
-                );
-
-                process.stdin.end();
-
-            }
-        );
+        };
 
     }
 

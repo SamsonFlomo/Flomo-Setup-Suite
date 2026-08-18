@@ -5,41 +5,87 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import registerDeploymentIPC from "./ipc/deploymentIPC.js";
-
 import registerExecutionIPC from "./ipc/executionIPC.js";
-
 import registerPowerShellIPC from "./ipc/powershellIPC.js";
 
-const __filename = fileURLToPath(import.meta.url);
+import powershellService
+    from "./services/powershellService.js";
 
-const __dirname = path.dirname(__filename);
+import ExecutionEngine
+    from "../backend/execution/ExecutionEngine.js";
+
+
+const __filename =
+    fileURLToPath(import.meta.url);
+
+
+const __dirname =
+    path.dirname(__filename);
+
 
 function createWindow() {
-  const window = new BrowserWindow({
-    width: 1200,
 
-    height: 800,
+    const window =
+        new BrowserWindow({
 
-    title: "Flomo Setup Suite",
+            width: 1200,
 
-    webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
+            height: 800,
 
-      contextIsolation: true,
+            title:
+                "Flomo Setup Suite",
 
-      nodeIntegration: false,
-    },
-  });
+            webPreferences: {
 
-  window.loadURL("http://localhost:5173");
+                preload:
+                    path.join(
+                        __dirname,
+                        "preload.js"
+                    ),
+
+                contextIsolation:
+                    true,
+
+                nodeIntegration:
+                    false
+
+            }
+
+        });
+
+
+    window.loadURL(
+        "http://localhost:5173"
+    );
+
 }
 
+
 app.whenReady().then(() => {
-  registerDeploymentIPC();
 
-  registerPowerShellIPC();
 
-  registerExecutionIPC();
+    /*
+     * Connect the backend execution engine
+     * to the central PowerShell service.
+     *
+     * The backend does not need to know
+     * how PowerShell is executed.
+     */
 
-  createWindow();
+    ExecutionEngine.setExecutor(
+        (script) =>
+            powershellService.execute(
+                script
+            )
+    );
+
+
+    registerDeploymentIPC();
+
+    registerPowerShellIPC();
+
+    registerExecutionIPC();
+
+    createWindow();
+
 });

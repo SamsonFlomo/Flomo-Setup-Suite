@@ -1,5 +1,27 @@
 class ExecutionEngine {
 
+    constructor() {
+
+        this.executor = null;
+
+    }
+
+
+    setExecutor(executor) {
+
+        if (typeof executor !== "function") {
+
+            throw new TypeError(
+                "PowerShell executor must be a function"
+            );
+
+        }
+
+        this.executor = executor;
+
+    }
+
+
     async execute(script) {
 
         if (!script) {
@@ -18,49 +40,29 @@ class ExecutionEngine {
         }
 
 
-        try {
+        if (!this.executor) {
 
-            /*
-             * PowerShell execution is handled by
-             * the Electron bridge.
-             *
-             * The renderer exposes:
-             *
-             * window.fss.powershell.execute()
-             */
+            return {
 
-            if (
-                typeof window === "undefined" ||
-                !window.fss ||
-                !window.fss.powershell ||
-                typeof window.fss.powershell.execute !== "function"
-            ) {
+                success: false,
 
-                return {
+                output: "",
 
-                    success: false,
+                errors:
+                    "PowerShell executor is not configured"
 
-                    output: "",
-
-                    errors:
-                        "PowerShell execution bridge is unavailable"
-
-                };
-
-            }
-
-
-            const result =
-                await window.fss.powershell.execute(
-                    script
-                );
-
-
-            return result;
-
+            };
 
         }
-        catch (error) {
+
+
+        try {
+
+            return await this.executor(
+                script
+            );
+
+        } catch (error) {
 
             return {
 
